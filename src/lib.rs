@@ -1,6 +1,6 @@
 use rand::{self, prelude::*};
 use std::time::Duration;
-use std::thread::sleep;
+use std::thread::{sleep, current};
 
 pub trait GenericInfo{
     fn display_info(&self) {}
@@ -30,14 +30,18 @@ impl<'a> MotherShip<'a> {
 }
 impl<'a> GenericInfo for MotherShip<'a> {
     fn display_info(&self) {
-        let mtr_ship_dock_msg: &str;
-        if self.dock == MotherShipDockStatus::Populated {
-            mtr_ship_dock_msg = "A ship is currently docked."
-        } else {
-            mtr_ship_dock_msg = "No ship is currently docked."
+        let mtr_ship_dock_msg: String;
+        let mtr_ship_rchrg_msg: String;
+        match self.dock {
+           MotherShipDockStatus::Populated => mtr_ship_dock_msg = String::from("A ship is docked."),
+           MotherShipDockStatus::Empty => mtr_ship_dock_msg = String::from("No ship is docked."),
         }
-        println!("--Mothership Status--\nName: {}\nDock Status: {mtr_ship_dock_msg}", self.name)
-}
+        match self.recharge {
+            MotherShipRechargeStatus::Charging => mtr_ship_rchrg_msg = String::from("Recharging a ship"),
+            MotherShipRechargeStatus::Idle => mtr_ship_rchrg_msg = String::from("Recharge port is vacant"),
+        }
+        println!("--Mothership Status--\nName: {}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
+    }
 }
 #[derive(Debug)]
 pub struct SpaceShip<'a> {
@@ -66,6 +70,7 @@ impl<'a> SpaceShip<'a> {
         mtr_shp.dock = MotherShipDockStatus::Populated;
         mtr_shp.recharge = MotherShipRechargeStatus::Charging;
         self.dock_status = SpaceShipDockStatus::Docked;
+        
         let initial_consumable_level = match self.consumables {
             FoodWater::Level(val) => val,
         };
@@ -76,15 +81,18 @@ impl<'a> SpaceShip<'a> {
             Fuel::Level(val) => val,
         };
         let a = [initial_fuel_level, initial_oxygen_level, initial_consumable_level];
-        let max = a.iter().max().unwrap_or(&100);
         let min = a.iter().min().unwrap_or(&0);
-        for _ in *min..*max {
+        mtr_shp.display_info();
+        for _ in *min..100 {
             self.recharge_consumables(1);
             self.recharge_oxygen(1);
             self.recharge_fuel(1);
             sleep(Duration::from_millis(400));
-            self.display_info()
+            self.display_info();
         }
+        mtr_shp.dock = MotherShipDockStatus::Empty;
+        mtr_shp.recharge = MotherShipRechargeStatus::Idle;
+        self.dock_status = SpaceShipDockStatus::Undocked;
     }
 }
 impl<'a> SpaceShipRecharge for SpaceShip<'a> {
@@ -139,19 +147,6 @@ pub enum MotherShipRechargeStatus {
 pub enum MotherShipDockStatus {
     Populated,
     Empty,
-}
-impl PartialEq for MotherShipDockStatus {
-    fn eq(&self, other: &Self) -> bool {
-        let current_status = match self {
-            MotherShipDockStatus::Populated => MotherShipDockStatus::Populated,
-            MotherShipDockStatus::Empty => MotherShipDockStatus::Empty,
-        };
-        if &current_status == other {
-            true
-        } else {
-            false
-        }
-    }
 }
 #[derive(Debug)]
 pub enum Name<'a> {
