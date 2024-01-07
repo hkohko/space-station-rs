@@ -50,6 +50,16 @@ pub struct SpaceShip<'a> {
     dock_status: SpaceShipDockStatus,
 }
 impl<'a> SpaceShip<'a> {
+    fn docked(&mut self, mtr_shp: &mut MotherShip) {
+        mtr_shp.dock = MotherShipDockStatus::Populated;
+        mtr_shp.recharge = MotherShipRechargeStatus::Charging;
+        self.dock_status = SpaceShipDockStatus::Docked;
+    }
+    fn undocked(&mut self, mtr_shp: &mut MotherShip) {
+        mtr_shp.dock = MotherShipDockStatus::Empty;
+        mtr_shp.recharge = MotherShipRechargeStatus::Idle;
+        self.dock_status = SpaceShipDockStatus::Undocked;
+    }
     pub fn new(n: &'a str) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
         let mut s = SpaceShip {
@@ -65,10 +75,7 @@ impl<'a> SpaceShip<'a> {
         s
     }
     pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
-        mtr_shp.dock = MotherShipDockStatus::Populated;
-        mtr_shp.recharge = MotherShipRechargeStatus::Charging;
-        self.dock_status = SpaceShipDockStatus::Docked;
-
+        self.docked(mtr_shp);
         let FoodWater::Level(initial_consumable_level) = self.consumables;
         let Oxygen::Level(initial_oxygen_level) = self.oxygen;
         let Fuel::Level(initial_fuel_level) = self.fuel;
@@ -86,9 +93,7 @@ impl<'a> SpaceShip<'a> {
             sleep(Duration::from_millis(200));
             self.display_info();
         }
-        mtr_shp.dock = MotherShipDockStatus::Empty;
-        mtr_shp.recharge = MotherShipRechargeStatus::Idle;
-        self.dock_status = SpaceShipDockStatus::Undocked;
+        self.undocked(mtr_shp);
     }
 }
 impl<'a> SpaceShipRecharge for SpaceShip<'a> {
