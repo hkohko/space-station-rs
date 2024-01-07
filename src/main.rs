@@ -1,4 +1,4 @@
-use space_station::{GenericInfo, MotherShip, SpaceShip};
+use space_station::{mother_ship::MotherShip, space_ship::SpaceShip, GenericInfo};
 fn main() {
     let mut zeus = SpaceShip::new("Zeus");
     let mut ada = MotherShip::new("Ada");
