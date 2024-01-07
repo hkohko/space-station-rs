@@ -1,5 +1,5 @@
 use rand::{self, prelude::*};
-use std::thread::{current, sleep};
+use std::thread::sleep;
 use std::time::Duration;
 
 pub trait GenericInfo {
@@ -9,9 +9,9 @@ pub trait LevelCap {
     fn adjust_level(&mut self) {}
 }
 pub trait SpaceShipRecharge {
-    fn recharge_consumables(&mut self, rate: i32) {}
-    fn recharge_oxygen(&mut self, rate: i32) {}
-    fn recharge_fuel(&mut self, rate: i32) {}
+    fn recharge_consumables(&mut self, _rate: i32) {}
+    fn recharge_oxygen(&mut self, _rate: i32) {}
+    fn recharge_fuel(&mut self, _rate: i32) {}
 }
 #[derive(Debug)]
 pub struct MotherShip<'a> {
@@ -30,22 +30,14 @@ impl<'a> MotherShip<'a> {
 }
 impl<'a> GenericInfo for MotherShip<'a> {
     fn display_info(&self) {
-        let mtr_ship_dock_msg: String;
-        let mtr_ship_rchrg_msg: String;
-        match self.dock {
-            MotherShipDockStatus::Populated => {
-                mtr_ship_dock_msg = String::from("A ship is docked.")
-            }
-            MotherShipDockStatus::Empty => mtr_ship_dock_msg = String::from("No ship is docked."),
-        }
-        match self.recharge {
-            MotherShipRechargeStatus::Charging => {
-                mtr_ship_rchrg_msg = String::from("Recharging a ship")
-            }
-            MotherShipRechargeStatus::Idle => {
-                mtr_ship_rchrg_msg = String::from("Recharge port is vacant")
-            }
-        }
+        let mtr_ship_dock_msg = match self.dock {
+            MotherShipDockStatus::Populated => String::from("A ship is docked."),
+            MotherShipDockStatus::Empty => String::from("No ship is docked."),
+        };
+        let mtr_ship_rchrg_msg = match self.recharge {
+            MotherShipRechargeStatus::Charging => String::from("Recharging a ship"),
+            MotherShipRechargeStatus::Idle => String::from("Recharge port is vacant"),
+        };
         println!("--Mothership Status--\nName: {}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
     }
 }
@@ -77,15 +69,9 @@ impl<'a> SpaceShip<'a> {
         mtr_shp.recharge = MotherShipRechargeStatus::Charging;
         self.dock_status = SpaceShipDockStatus::Docked;
 
-        let initial_consumable_level = match self.consumables {
-            FoodWater::Level(val) => val,
-        };
-        let initial_oxygen_level = match self.oxygen {
-            Oxygen::Level(val) => val,
-        };
-        let initial_fuel_level = match self.fuel {
-            Fuel::Level(val) => val,
-        };
+        let FoodWater::Level(initial_consumable_level) = self.consumables;
+        let Oxygen::Level(initial_oxygen_level) = self.oxygen;
+        let Fuel::Level(initial_fuel_level) = self.fuel;
         let a = [
             initial_fuel_level,
             initial_oxygen_level,
@@ -97,7 +83,7 @@ impl<'a> SpaceShip<'a> {
             self.recharge_consumables(1);
             self.recharge_oxygen(1);
             self.recharge_fuel(1);
-            sleep(Duration::from_millis(400));
+            sleep(Duration::from_millis(200));
             self.display_info();
         }
         mtr_shp.dock = MotherShipDockStatus::Empty;
@@ -107,23 +93,17 @@ impl<'a> SpaceShip<'a> {
 }
 impl<'a> SpaceShipRecharge for SpaceShip<'a> {
     fn recharge_consumables(&mut self, rate: i32) {
-        let initial_consumable_level = match self.consumables {
-            FoodWater::Level(val) => val,
-        };
+        let FoodWater::Level(initial_consumable_level) = self.consumables;
         self.consumables = FoodWater::Level(initial_consumable_level + rate);
         self.consumables.adjust_level();
     }
     fn recharge_oxygen(&mut self, rate: i32) {
-        let initial_oxygen_level = match self.oxygen {
-            Oxygen::Level(val) => val,
-        };
+        let Oxygen::Level(initial_oxygen_level) = self.oxygen;
         self.oxygen = Oxygen::Level(initial_oxygen_level + rate);
         self.oxygen.adjust_level()
     }
     fn recharge_fuel(&mut self, rate: i32) {
-        let initial_fuel_level = match self.fuel {
-            Fuel::Level(val) => val,
-        };
+        let Fuel::Level(initial_fuel_level) = self.fuel;
         self.fuel = Fuel::Level(initial_fuel_level + rate);
         self.fuel.adjust_level();
     }
@@ -131,15 +111,9 @@ impl<'a> SpaceShipRecharge for SpaceShip<'a> {
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
         let n = self.name;
-        let c = match self.consumables {
-            FoodWater::Level(val) => val,
-        };
-        let o = match self.oxygen {
-            Oxygen::Level(val) => val,
-        };
-        let f = match self.fuel {
-            Fuel::Level(val) => val,
-        };
+        let FoodWater::Level(c) = self.consumables;
+        let Oxygen::Level(o) = self.oxygen;
+        let Fuel::Level(f) = self.fuel;
         println!("--Ship Status--\nName: {n}\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
     }
 }
