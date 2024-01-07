@@ -60,22 +60,7 @@ impl<'a> SpaceShip<'a> {
         mtr_shp.recharge = MotherShipRechargeStatus::Idle;
         self.dock_status = SpaceShipDockStatus::Undocked;
     }
-    pub fn new(n: &'a str) -> SpaceShip<'a> {
-        let mut rng = rand::thread_rng();
-        let mut s = SpaceShip {
-            name: n,
-            consumables: FoodWater::Level(rng.gen_range(50..100)),
-            oxygen: Oxygen::Level(rng.gen_range(50..100)),
-            fuel: Fuel::Level(rng.gen_range(50..100)),
-            dock_status: SpaceShipDockStatus::Undocked,
-        };
-        s.consumables.adjust_level();
-        s.oxygen.adjust_level();
-        s.fuel.adjust_level();
-        s
-    }
-    pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
-        self.docked(mtr_shp);
+    fn recharge_backend(&mut self, mtr_shp: &mut MotherShip) {
         let FoodWater::Level(initial_consumable_level) = self.consumables;
         let Oxygen::Level(initial_oxygen_level) = self.oxygen;
         let Fuel::Level(initial_fuel_level) = self.fuel;
@@ -93,6 +78,24 @@ impl<'a> SpaceShip<'a> {
             sleep(Duration::from_millis(200));
             self.display_info();
         }
+    }
+    pub fn new(n: &'a str) -> SpaceShip<'a> {
+        let mut rng = rand::thread_rng();
+        let mut s = SpaceShip {
+            name: n,
+            consumables: FoodWater::Level(rng.gen_range(50..100)),
+            oxygen: Oxygen::Level(rng.gen_range(50..100)),
+            fuel: Fuel::Level(rng.gen_range(50..100)),
+            dock_status: SpaceShipDockStatus::Undocked,
+        };
+        s.consumables.adjust_level();
+        s.oxygen.adjust_level();
+        s.fuel.adjust_level();
+        s
+    }
+    pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
+        self.docked(mtr_shp);
+        self.recharge_backend(mtr_shp);
         self.undocked(mtr_shp);
     }
 }
