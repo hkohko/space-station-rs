@@ -6,22 +6,23 @@ pub trait LevelCap {
     fn adjust_level(&mut self) {}
 }
 #[derive(Debug)]
-pub struct MotherShip {
+pub struct MotherShip<'a> {
+    pub name: &'a str,
     pub dock: bool,
-    pub recharge: bool
+    pub recharge: bool,
 }
 #[derive(Debug)]
 pub struct SpaceShip<'a> {
-    pub name: Name<'a>,
+    pub name: &'a str,
     pub consumables: FoodWater,
     pub oxygen: Oxygen,
     pub fuel: Fuel,
 }
 impl<'a> SpaceShip<'a> {
-    pub fn new(name: &'a str) -> SpaceShip<'a> {
+    pub fn new(n: &'a str) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
         let mut s = SpaceShip {
-            name: Name::Name(name),
+            name: n,
             consumables: FoodWater::Level(rng.gen_range(50..100) as f32 * 1.1),
             oxygen: Oxygen::Level(rng.gen_range(50..100) as f32 * 1.2),
             fuel: Fuel::Level(rng.gen_range(50..100) as f32 * 1.1)
@@ -34,9 +35,7 @@ impl<'a> SpaceShip<'a> {
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
-        let n = match self.name {
-            Name::Name(val) => val,
-        };
+        let n = self.name;
         let c = match self.consumables {
             FoodWater::Level(val) => val,
         };
@@ -46,7 +45,7 @@ impl<'a> GenericInfo for SpaceShip<'a> {
         let f = match self.fuel {
             Fuel::Level(val) => val,
         };
-        println!("Your ship currently has these status:\nName: {n}\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
+        println!("--Ship Status--\nName: {n}\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
     }
 }
 #[derive(Debug)]

@@ -1,6 +1,5 @@
-use space_station::{SpaceShip, FoodWater, GenericInfo};
+use space_station::{SpaceShip, GenericInfo};
 fn main() {
-    let new_space_station = SpaceShip::new("Zeus");
-    println!("{new_space_station:?}");
-    new_space_station.display_info();
+    let zeus = SpaceShip::new("Zeus");
+    zeus.display_info();
 }
