@@ -153,12 +153,6 @@ pub enum Oxygen {
 pub enum Fuel {
     Level(i32),
 }
-#[derive(Debug)]
-pub enum RechargeFor {
-    FoodWater(i32),
-    Oxygen(i32),
-    Fuel(i32),
-}
 impl LevelCap for FoodWater {
     fn adjust_level(&mut self) {
         match self {
