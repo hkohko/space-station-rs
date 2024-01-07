@@ -1,8 +1,8 @@
 use rand::{self, prelude::*};
+use std::thread::{current, sleep};
 use std::time::Duration;
-use std::thread::{sleep, current};
 
-pub trait GenericInfo{
+pub trait GenericInfo {
     fn display_info(&self) {}
 }
 pub trait LevelCap {
@@ -33,12 +33,18 @@ impl<'a> GenericInfo for MotherShip<'a> {
         let mtr_ship_dock_msg: String;
         let mtr_ship_rchrg_msg: String;
         match self.dock {
-           MotherShipDockStatus::Populated => mtr_ship_dock_msg = String::from("A ship is docked."),
-           MotherShipDockStatus::Empty => mtr_ship_dock_msg = String::from("No ship is docked."),
+            MotherShipDockStatus::Populated => {
+                mtr_ship_dock_msg = String::from("A ship is docked.")
+            }
+            MotherShipDockStatus::Empty => mtr_ship_dock_msg = String::from("No ship is docked."),
         }
         match self.recharge {
-            MotherShipRechargeStatus::Charging => mtr_ship_rchrg_msg = String::from("Recharging a ship"),
-            MotherShipRechargeStatus::Idle => mtr_ship_rchrg_msg = String::from("Recharge port is vacant"),
+            MotherShipRechargeStatus::Charging => {
+                mtr_ship_rchrg_msg = String::from("Recharging a ship")
+            }
+            MotherShipRechargeStatus::Idle => {
+                mtr_ship_rchrg_msg = String::from("Recharge port is vacant")
+            }
         }
         println!("--Mothership Status--\nName: {}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
     }
@@ -70,7 +76,7 @@ impl<'a> SpaceShip<'a> {
         mtr_shp.dock = MotherShipDockStatus::Populated;
         mtr_shp.recharge = MotherShipRechargeStatus::Charging;
         self.dock_status = SpaceShipDockStatus::Docked;
-        
+
         let initial_consumable_level = match self.consumables {
             FoodWater::Level(val) => val,
         };
@@ -80,7 +86,11 @@ impl<'a> SpaceShip<'a> {
         let initial_fuel_level = match self.fuel {
             Fuel::Level(val) => val,
         };
-        let a = [initial_fuel_level, initial_oxygen_level, initial_consumable_level];
+        let a = [
+            initial_fuel_level,
+            initial_oxygen_level,
+            initial_consumable_level,
+        ];
         let min = a.iter().min().unwrap_or(&0);
         mtr_shp.display_info();
         for _ in *min..100 {
@@ -150,10 +160,10 @@ pub enum MotherShipDockStatus {
 }
 #[derive(Debug)]
 pub enum Name<'a> {
-    Name(&'a str)
+    Name(&'a str),
 }
 #[derive(Debug)]
-pub enum FoodWater{
+pub enum FoodWater {
     Level(i32),
 }
 #[derive(Debug)]
@@ -168,7 +178,7 @@ pub enum Fuel {
 pub enum RechargeFor {
     FoodWater(i32),
     Oxygen(i32),
-    Fuel(i32)
+    Fuel(i32),
 }
 impl LevelCap for FoodWater {
     fn adjust_level(&mut self) {
