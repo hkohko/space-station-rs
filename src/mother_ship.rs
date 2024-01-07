@@ -2,8 +2,8 @@ use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus};
 #[derive(Debug)]
 pub struct MotherShip<'a> {
     name: &'a str,
-    pub dock: MotherShipDockStatus,
-    pub recharge: MotherShipRechargeStatus,
+    dock: MotherShipDockStatus,
+    recharge: MotherShipRechargeStatus,
 }
 impl<'a> MotherShip<'a> {
     pub fn new(n: &'a str) -> MotherShip<'a> {
@@ -11,6 +11,16 @@ impl<'a> MotherShip<'a> {
             name: n,
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
+        }
+    }
+    pub fn change_status(&mut self, dock: Option<MotherShipDockStatus>, recharge: Option<MotherShipRechargeStatus>) {
+        match dock {
+            Some(val) => self.dock = val,
+            None => ()
+        };
+        match recharge {
+            Some(val) => self.recharge = val,
+            None => ()
         }
     }
 }

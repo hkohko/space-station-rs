@@ -16,13 +16,11 @@ pub struct SpaceShip<'a> {
 }
 impl<'a> SpaceShip<'a> {
     fn docked(&mut self, mtr_shp: &mut MotherShip) {
-        mtr_shp.dock = MotherShipDockStatus::Populated;
-        mtr_shp.recharge = MotherShipRechargeStatus::Charging;
+        mtr_shp.change_status(Some(MotherShipDockStatus::Populated), Some(MotherShipRechargeStatus::Charging));
         self.dock_status = SpaceShipDockStatus::Docked;
     }
     fn undocked(&mut self, mtr_shp: &mut MotherShip) {
-        mtr_shp.dock = MotherShipDockStatus::Empty;
-        mtr_shp.recharge = MotherShipRechargeStatus::Idle;
+        mtr_shp.change_status(Some(MotherShipDockStatus::Empty), Some(MotherShipRechargeStatus::Idle));
         self.dock_status = SpaceShipDockStatus::Undocked;
     }
     fn recharge_backend(&mut self, mtr_shp: &mut MotherShip) {
