@@ -1,7 +1,7 @@
-use crate::mother_ship::MotherShip;
+use crate::mother_ship::{MotherShip, self};
 use crate::{
     Resources, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus,
-    SpaceShipDockStatus, SpaceShipRecharge,
+    SpaceShipDockStatus, Recharge,
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
@@ -42,11 +42,10 @@ impl<'a> SpaceShip<'a> {
             initial_consumable_level,
         ];
         let min = a.iter().min().unwrap_or(&0);
-        mtr_shp.display_info();
         for _ in *min..100 {
-            self.recharge_consumables(1);
-            self.recharge_oxygen(1);
-            self.recharge_fuel(1);
+            self.recharge_consumables(1, mtr_shp);
+            self.recharge_oxygen(1, mtr_shp);
+            self.recharge_fuel(1, mtr_shp);
             sleep(Duration::from_millis(200));
             self.display_info();
         }
@@ -60,9 +59,9 @@ impl<'a> SpaceShip<'a> {
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
         };
-        s.consumables.adjust_level();
-        s.oxygen.adjust_level();
-        s.fuel.adjust_level();
+        s.consumables.adjust_spc_max_level();
+        s.oxygen.adjust_spc_max_level();
+        s.fuel.adjust_spc_max_level();
         s
     }
     pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
@@ -71,30 +70,33 @@ impl<'a> SpaceShip<'a> {
         self.undocked(mtr_shp);
     }
 }
-impl<'a> SpaceShipRecharge for SpaceShip<'a> {
-    fn recharge_consumables(&mut self, rate: i32) {
+impl<'a> Recharge for SpaceShip<'a> {
+    fn recharge_consumables(&mut self, rate: i32, mtr_shp: &mut MotherShip) {
         let initial_consumable_level =  match self.consumables {
             Resources::FoodWater(val) => val,
             _ => 0,
         };
+        mtr_shp.modify_resources(Resources::FoodWater(0), rate, &initial_consumable_level);
         self.consumables = Resources::FoodWater(initial_consumable_level + rate);
-        self.consumables.adjust_level();
+        self.consumables.adjust_spc_max_level();
     }
-    fn recharge_oxygen(&mut self, rate: i32) {
+    fn recharge_oxygen(&mut self, rate: i32, mtr_shp: &mut MotherShip) {
         let initial_oxygen_level = match self.oxygen {
             Resources::Oxygen(val) => val,
             _ => 0,
         };
+        mtr_shp.modify_resources(Resources::Oxygen(0), rate, &initial_oxygen_level);
         self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
-        self.oxygen.adjust_level()
+        self.oxygen.adjust_spc_max_level()
     }
-    fn recharge_fuel(&mut self, rate: i32) {
+    fn recharge_fuel(&mut self, rate: i32, mtr_shp: &mut MotherShip) {
         let initial_fuel_level = match self.fuel {
             Resources::Fuel(val) => val,
             _ => 0,
         };
+        mtr_shp.modify_resources(Resources::Fuel(0), rate, &initial_fuel_level);
         self.fuel = Resources::Fuel(initial_fuel_level + rate);
-        self.fuel.adjust_level();
+        self.fuel.adjust_spc_max_level();
     }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {

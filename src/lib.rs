@@ -3,14 +3,15 @@ pub mod space_ship;
 
 pub trait GenericInfo {
     fn display_info(&self) {}
+    fn display_resources(&self) {}
 }
 pub trait LevelCap {
-    fn adjust_level(&mut self) {}
+    fn adjust_spc_max_level(&mut self) {}
 }
-pub trait SpaceShipRecharge {
-    fn recharge_consumables(&mut self, _rate: i32) {}
-    fn recharge_oxygen(&mut self, _rate: i32) {}
-    fn recharge_fuel(&mut self, _rate: i32) {}
+pub trait Recharge {
+    fn recharge_consumables(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
+    fn recharge_oxygen(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
+    fn recharge_fuel(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
 }
 
 #[derive(Debug)]
@@ -39,7 +40,7 @@ pub enum Resources {
     Fuel(i32),
 }
 impl LevelCap for Resources {
-    fn adjust_level(&mut self) {
+    fn adjust_spc_max_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::min(*val, 100);
@@ -50,7 +51,7 @@ impl LevelCap for Resources {
             Self::Fuel(val) => {
                 *val = std::cmp::min(*val, 100);
             }
-            
         };
     }
+    
 }
