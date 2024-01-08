@@ -1,6 +1,6 @@
 use crate::mother_ship::MotherShip;
 use crate::{
-    FoodWater, Fuel, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Oxygen,
+    Resources, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus,
     SpaceShipDockStatus, SpaceShipRecharge,
 };
 use rand::{self, prelude::*};
@@ -9,9 +9,9 @@ use std::time::Duration;
 #[derive(Debug)]
 pub struct SpaceShip<'a> {
     name: &'a str,
-    consumables: FoodWater,
-    oxygen: Oxygen,
-    fuel: Fuel,
+    consumables: Resources,
+    oxygen: Resources,
+    fuel: Resources,
     dock_status: SpaceShipDockStatus,
 }
 impl<'a> SpaceShip<'a> {
@@ -24,9 +24,18 @@ impl<'a> SpaceShip<'a> {
         self.dock_status = SpaceShipDockStatus::Undocked;
     }
     fn recharge_backend(&mut self, mtr_shp: &mut MotherShip) {
-        let FoodWater::Level(initial_consumable_level) = self.consumables;
-        let Oxygen::Level(initial_oxygen_level) = self.oxygen;
-        let Fuel::Level(initial_fuel_level) = self.fuel;
+        let initial_consumable_level = match self.consumables {
+            Resources::FoodWater(val) => val,
+            _ => 0,
+        };
+        let initial_oxygen_level = match self.oxygen {
+            Resources::Oxygen(val) => val,
+            _ => 0,
+        };
+        let initial_fuel_level = match self.fuel {
+            Resources::Fuel(val) => val,
+            _ => 0,
+        };
         let a = [
             initial_fuel_level,
             initial_oxygen_level,
@@ -46,9 +55,9 @@ impl<'a> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
         let mut s = SpaceShip {
             name: n,
-            consumables: FoodWater::Level(rng.gen_range(50..100)),
-            oxygen: Oxygen::Level(rng.gen_range(50..100)),
-            fuel: Fuel::Level(rng.gen_range(50..100)),
+            consumables: Resources::FoodWater(rng.gen_range(50..100)),
+            oxygen: Resources::Oxygen(rng.gen_range(50..100)),
+            fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
         };
         s.consumables.adjust_level();
@@ -64,27 +73,45 @@ impl<'a> SpaceShip<'a> {
 }
 impl<'a> SpaceShipRecharge for SpaceShip<'a> {
     fn recharge_consumables(&mut self, rate: i32) {
-        let FoodWater::Level(initial_consumable_level) = self.consumables;
-        self.consumables = FoodWater::Level(initial_consumable_level + rate);
+        let initial_consumable_level =  match self.consumables {
+            Resources::FoodWater(val) => val,
+            _ => 0,
+        };
+        self.consumables = Resources::FoodWater(initial_consumable_level + rate);
         self.consumables.adjust_level();
     }
     fn recharge_oxygen(&mut self, rate: i32) {
-        let Oxygen::Level(initial_oxygen_level) = self.oxygen;
-        self.oxygen = Oxygen::Level(initial_oxygen_level + rate);
+        let initial_oxygen_level = match self.oxygen {
+            Resources::Oxygen(val) => val,
+            _ => 0,
+        };
+        self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
         self.oxygen.adjust_level()
     }
     fn recharge_fuel(&mut self, rate: i32) {
-        let Fuel::Level(initial_fuel_level) = self.fuel;
-        self.fuel = Fuel::Level(initial_fuel_level + rate);
+        let initial_fuel_level = match self.fuel {
+            Resources::Fuel(val) => val,
+            _ => 0,
+        };
+        self.fuel = Resources::Fuel(initial_fuel_level + rate);
         self.fuel.adjust_level();
     }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
         let n = self.name;
-        let FoodWater::Level(c) = self.consumables;
-        let Oxygen::Level(o) = self.oxygen;
-        let Fuel::Level(f) = self.fuel;
+        let c= match self.consumables {
+            Resources::FoodWater(val) => val,
+            _ => 0,
+        };
+        let o = match self.oxygen {
+            Resources::Oxygen(val) => val,
+            _ => 0,
+        };
+        let f = match self.fuel {
+            Resources::Fuel(val) => val,
+            _ => 0,
+        };
         println!("--Ship Status--\nName: {n}\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
     }
 }

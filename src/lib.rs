@@ -33,41 +33,24 @@ pub enum Name<'a> {
     Name(&'a str),
 }
 #[derive(Debug)]
-pub enum FoodWater {
-    Level(i32),
+pub enum Resources {
+    FoodWater(i32),
+    Oxygen(i32),
+    Fuel(i32),
 }
-#[derive(Debug)]
-pub enum Oxygen {
-    Level(i32),
-}
-#[derive(Debug)]
-pub enum Fuel {
-    Level(i32),
-}
-impl LevelCap for FoodWater {
+impl LevelCap for Resources {
     fn adjust_level(&mut self) {
         match self {
-            Self::Level(val) => {
+            Self::FoodWater(val) => {
                 *val = std::cmp::min(*val, 100);
             }
+            Self::Oxygen(val) => {
+                *val = std::cmp::min(*val, 100);
+            }
+            Self::Fuel(val) => {
+                *val = std::cmp::min(*val, 100);
+            }
+            
         };
-    }
-}
-impl LevelCap for Oxygen {
-    fn adjust_level(&mut self) {
-        match self {
-            Self::Level(val) => {
-                *val = std::cmp::min(*val, 100);
-            }
-        }
-    }
-}
-impl LevelCap for Fuel {
-    fn adjust_level(&mut self) {
-        match self {
-            Self::Level(val) => {
-                *val = std::cmp::min(*val, 100);
-            }
-        }
     }
 }
