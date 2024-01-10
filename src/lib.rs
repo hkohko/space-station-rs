@@ -32,7 +32,11 @@ pub trait TranserResources {
     /// ada.give_resources(Resources::FoodWater, 1, spc_current_level);
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) {}
-    fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T) where T: TranserResources {}
+    fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
+    where
+        T: TranserResources,
+    {
+    }
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
@@ -82,5 +86,4 @@ impl LevelCap for Resources {
             }
         };
     }
-    
 }

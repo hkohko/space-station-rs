@@ -15,4 +15,3 @@ fn current_features() {
     zeus.recharge(&mut ada);
     ada.display_info();
 }
-

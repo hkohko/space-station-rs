@@ -1,8 +1,8 @@
 #![warn(missing_docs)]
 use crate::mother_ship::MotherShip;
 use crate::{
-    Resources, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus,
-    SpaceShipDockStatus, TranserResources
+    GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Resources,
+    SpaceShipDockStatus, TranserResources,
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
@@ -18,11 +18,17 @@ pub struct SpaceShip<'a> {
 }
 impl<'a> SpaceShip<'a> {
     fn docked(&mut self, mtr_shp: &mut MotherShip) {
-        mtr_shp.change_status(Some(MotherShipDockStatus::Populated), Some(MotherShipRechargeStatus::Charging));
+        mtr_shp.change_status(
+            Some(MotherShipDockStatus::Populated),
+            Some(MotherShipRechargeStatus::Charging),
+        );
         self.dock_status = SpaceShipDockStatus::Docked;
     }
     fn undocked(&mut self, mtr_shp: &mut MotherShip) {
-        mtr_shp.change_status(Some(MotherShipDockStatus::Empty), Some(MotherShipRechargeStatus::Idle));
+        mtr_shp.change_status(
+            Some(MotherShipDockStatus::Empty),
+            Some(MotherShipRechargeStatus::Idle),
+        );
         self.dock_status = SpaceShipDockStatus::Undocked;
     }
     fn recharge_backend(&mut self, mtr_shp: &mut MotherShip) {
@@ -88,30 +94,33 @@ impl<'a> SpaceShip<'a> {
     }
 }
 impl<'a> TranserResources for SpaceShip<'a> {
-    fn receive_resources<T>(&mut self, rsc: Resources, mtr_shp: &mut T) where T: TranserResources {
+    fn receive_resources<T>(&mut self, rsc: Resources, mtr_shp: &mut T)
+    where
+        T: TranserResources,
+    {
         match rsc {
             Resources::FoodWater(rate) => {
-                let initial_consumable_level =  match self.consumables {
-                Resources::FoodWater(val) => val,
+                let initial_consumable_level = match self.consumables {
+                    Resources::FoodWater(val) => val,
                     _ => 0,
                 };
                 mtr_shp.give_resources(Resources::FoodWater(rate), initial_consumable_level);
                 self.consumables = Resources::FoodWater(initial_consumable_level + rate);
-                self.consumables.adjust_spc_max_level();   
-            },
+                self.consumables.adjust_spc_max_level();
+            }
             Resources::Oxygen(rate) => {
                 let initial_oxygen_level = match self.oxygen {
-                Resources::Oxygen(val) => val,
-                _ => 0,
+                    Resources::Oxygen(val) => val,
+                    _ => 0,
                 };
                 mtr_shp.give_resources(Resources::Oxygen(rate), initial_oxygen_level);
                 self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
                 self.oxygen.adjust_spc_max_level()
-            },
+            }
             Resources::Fuel(rate) => {
                 let initial_fuel_level = match self.fuel {
-                Resources::Fuel(val) => val,
-                _ => 0,
+                    Resources::Fuel(val) => val,
+                    _ => 0,
                 };
                 mtr_shp.give_resources(Resources::Fuel(rate), initial_fuel_level);
                 self.fuel = Resources::Fuel(initial_fuel_level + rate);
@@ -123,7 +132,7 @@ impl<'a> TranserResources for SpaceShip<'a> {
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
         let n = self.name;
-        let c= match self.consumables {
+        let c = match self.consumables {
             Resources::FoodWater(val) => val,
             _ => 0,
         };

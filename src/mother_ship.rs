@@ -1,5 +1,7 @@
 #![warn(missing_docs)]
-use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources};
+use crate::{
+    GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources,
+};
 /// Struct for motherships.
 #[derive(Debug)]
 pub struct MotherShip<'a> {
@@ -38,38 +40,42 @@ impl<'a> MotherShip<'a> {
     /// // Change ship's status to Populated.
     /// ada.change_status(Some(MotherShipDocStatus::Populated), None);
     /// ```
-    pub fn change_status(&mut self, dock: Option<MotherShipDockStatus>, recharge: Option<MotherShipRechargeStatus>) {
+    pub fn change_status(
+        &mut self,
+        dock: Option<MotherShipDockStatus>,
+        recharge: Option<MotherShipRechargeStatus>,
+    ) {
         match dock {
             Some(val) => self.dock = val,
-            None => ()
+            None => (),
         };
         match recharge {
             Some(val) => self.recharge = val,
-            None => ()
+            None => (),
         };
     }
 }
 impl<'a> TranserResources for MotherShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) {
         if spc_current_level == 100 {
-            return
+            return;
         }
         match rsc {
             Resources::FoodWater(rate) => {
                 if let Resources::FoodWater(val) = self.resource.consumable {
                     self.resource.consumable = Resources::FoodWater(val - rate);
                 }
-            },
+            }
             Resources::Oxygen(rate) => {
                 if let Resources::Oxygen(val) = self.resource.oxygen {
                     self.resource.oxygen = Resources::Oxygen(val - rate);
                 }
-            },
+            }
             Resources::Fuel(rate) => {
                 if let Resources::Fuel(val) = self.resource.fuel {
                     self.resource.fuel = Resources::Fuel(val - rate);
                 }
-            },
+            }
         }
     }
 }
@@ -101,7 +107,7 @@ impl<'a> GenericInfo for MotherShip<'a> {
             }
         };
         let fuel = {
-            if let Resources::Fuel(val)= self.resource.fuel {
+            if let Resources::Fuel(val) = self.resource.fuel {
                 val
             } else {
                 0
