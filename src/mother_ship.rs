@@ -1,5 +1,5 @@
 #![warn(missing_docs)]
-use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources};
+use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources, isMother};
 /// Struct for motherships.
 #[derive(Debug)]
 pub struct MotherShip<'a> {
@@ -8,6 +8,7 @@ pub struct MotherShip<'a> {
     dock: MotherShipDockStatus,
     recharge: MotherShipRechargeStatus,
 }
+impl<'a> isMother for MotherShip<'a> {}
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
     /// A new mothership will:  
@@ -30,6 +31,7 @@ impl<'a> MotherShip<'a> {
             recharge: MotherShipRechargeStatus::Idle,
         }
     }
+
     /// Change the dock and/or recharge status of the mothership.
     /// ## Examples
     /// ```
@@ -47,13 +49,9 @@ impl<'a> MotherShip<'a> {
             None => ()
         };
     }
-    /// Modify resources currently available on the mothership.
-    /// ## Examples
-    /// ```
-    /// let mut ada = MotherShip::new("Ada");
-    /// ada.modify_resources(Resources::FoodWater, 1, spc_current_level);
-    /// ```
-    pub fn modify_resources(&mut self, rsc: Resources, rate: i32, spc_current_level: &i32) {
+}
+impl<'a> TranserResources for MotherShip<'a> {
+    fn give_resources(&mut self, rsc: Resources, rate: i32, spc_current_level: &i32) {
         if spc_current_level == &100 {
             return
         }
@@ -114,6 +112,7 @@ impl<'a> GenericInfo for MotherShip<'a> {
     }
 }
 #[derive(Debug)]
+/// Struct for mothershp resources.
 struct MotherShipResource {
     consumable: Resources,
     oxygen: Resources,

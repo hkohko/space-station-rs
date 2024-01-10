@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 //! # space-station-rs
 //!
 //! Exploring Rust's type system by creating a space station game.
@@ -18,19 +18,33 @@ pub trait GenericInfo {
     /// Displays a ship's current resources.
     fn display_resources(&self) {}
 }
+/// Shared trait for mother-type ships.
+pub trait isMother {}
 /// Implements a level cap on resources for ships.
 pub trait LevelCap {
     /// Limit the max level for resources on a spaceship.
     fn adjust_spc_max_level(&mut self) {}
 }
+/// Shared trait for ships that can transfer resources, be it receiving or giving.
+pub trait TranserResources {
+    /// Modify resources currently available on the mothership.
+    /// ## Examples
+    /// ```
+    /// let mut ada = MotherShip::new("Ada");
+    /// ada.give_resources(Resources::FoodWater, 1, spc_current_level);
+    /// ```
+    fn give_resources(&mut self, _rsc: Resources, _rate: i32, _current_level: &i32) {}
+    fn receive_resources<T>(&mut self, rate: i32, _rsc: Resources ,mtr_shp: &mut T) where T: isMother  {}
+}
+
 /// Shared trait for recharging resources.
-pub trait Recharge {
+pub trait ReceiveResources {
     /// Recharge consumables.
-    fn recharge_consumables(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
+    fn receive_consumables(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
     /// Recharge oxygen.
-    fn recharge_oxygen(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
+    fn receive_oxygen(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
     /// Recharge fuel.
-    fn recharge_fuel(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
+    fn receive_fuel(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
