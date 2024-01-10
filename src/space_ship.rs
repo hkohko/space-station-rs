@@ -2,7 +2,7 @@
 use crate::mother_ship::MotherShip;
 use crate::{
     GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Resources,
-    SpaceShipDockStatus, TranserResources, Location, Move,
+    SpaceShipDockStatus, TranserResources, Coordinates, Move,
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
@@ -15,7 +15,7 @@ pub struct SpaceShip<'a> {
     oxygen: Resources,
     fuel: Resources,
     dock_status: SpaceShipDockStatus,
-    location: Location,
+    location: Coordinates,
 }
 impl<'a> SpaceShip<'a> {
     fn docked(&mut self, mtr_shp: &mut MotherShip) {
@@ -74,7 +74,7 @@ impl<'a> SpaceShip<'a> {
             oxygen: Resources::Oxygen(rng.gen_range(50..100)),
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
-            location: Location(rng.gen_range(5..100), rng.gen_range(5..100)),
+            location: Coordinates(rng.gen_range(5..100), rng.gen_range(5..100)),
         };
         s.consumables.adjust_spc_max_level();
         s.oxygen.adjust_spc_max_level();
@@ -96,6 +96,37 @@ impl<'a> SpaceShip<'a> {
     }
 }
 impl<'a> TranserResources for SpaceShip<'a> {
+    fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
+        match rsc {
+            Resources::FoodWater(val) => {
+                if spc_current_level - val > 0 {
+                    self.consumables = Resources::FoodWater(spc_current_level - val);
+                    true
+                } else {
+                    println!("Consumable unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}", self.consumables);
+                    false
+                }
+            }
+            Resources::Oxygen(val) => {
+                if spc_current_level - val > 0 {
+                    self.oxygen = Resources::Oxygen(spc_current_level - val);
+                    true
+                } else {
+                    println!("Oxygen unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}", self.oxygen);
+                    false
+                }
+            }
+            Resources::Fuel(val) => {
+                if spc_current_level - val > 0 {
+                    self.fuel = Resources::Fuel(spc_current_level - val);
+                    true
+                } else {
+                    println!("Fuel unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}", self.fuel);
+                    false
+                }
+            }
+        }
+    }
     fn receive_resources<T>(&mut self, rsc: Resources, mtr_shp: &mut T)
     where
         T: TranserResources,
@@ -154,12 +185,28 @@ impl<'a> GenericInfo for SpaceShip<'a> {
     }
 }
 impl<'a> Move for SpaceShip<'a> {
-    fn to_location(&mut self, to: &Location) {
+    fn to_location(&mut self, to: &Coordinates) {
         let within_bounds = to.max_bounds();
         if within_bounds {
-            self.location.0 = to.0;
-            self.location.1 = to.1;
-            println!("Moved to:\nX: {}\nY: {}", to.0, to.1);
+            let dist = to.get_distance(Coordinates::new(self.location.0, self.location.1));
+            let fuel_to_spend = match dist {
+                Some(val) => {
+                    (val * 0.2).floor()
+                }
+                None => 0.0
+            };
+            let current_fuel = match self.fuel {
+                Resources::Fuel(val) => val,
+                _ => 0,
+            };
+            let enough_fuel = self.give_resources(Resources::Fuel(fuel_to_spend as i32), current_fuel);
+            if enough_fuel {
+                self.location.0 = to.0;
+                self.location.1 = to.1;
+                println!("Moved to ({}, {})", to.0, to.1);
+            } else {
+                println!("Not enough fuel to move to ({}, {})", to.0, to.1);
+            }
         }
     }
 }

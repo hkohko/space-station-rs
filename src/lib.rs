@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 //! # space-station-rs
 //!
 //! Exploring Rust's type system by creating a space station game.
@@ -22,6 +22,7 @@ pub trait GenericInfo {
 pub trait LevelCap {
     /// Limit the max level for resources on a spaceship.
     fn adjust_spc_max_level(&mut self) {}
+    fn adjust_spc_min_level(&mut self) {}
 }
 /// Shared trait for ships that can transfer resources, be it receiving or giving.
 pub trait TranserResources {
@@ -31,7 +32,7 @@ pub trait TranserResources {
     /// let mut ada = MotherShip::new("Ada");
     /// ada.give_resources(Resources::FoodWater(1), spc_current_level);
     /// ```
-    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) {}
+    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {true}
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
     where
         T: TranserResources,
@@ -39,7 +40,7 @@ pub trait TranserResources {
     }
 }
 pub trait Move {
-    fn to_location(&mut self, _to: &Location) {}
+    fn to_location(&mut self, _to: &Coordinates) {}
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
@@ -89,13 +90,33 @@ impl LevelCap for Resources {
             }
         };
     }
+    fn adjust_spc_min_level(&mut self) {
+        match self {
+            Self::FoodWater(val) => {
+                *val = std::cmp::max(*val, 0);
+            },
+            Self::Oxygen(val) => {
+                *val = std::cmp::max(*val, 0);
+            },
+            Self::Fuel(val) => {
+                *val = std::cmp::max(*val, 0);
+            }
+        }
+    }
 }
 #[derive(Debug)]
-pub struct Location(i32, i32);
+pub struct Coordinates(i32, i32);
+pub enum Quadrants {
+    First,
+    Second,
+    Third,
+    Fourth,
+}
+pub struct Location();
 
-impl Location {
+impl Coordinates {
     pub fn new(x: i32, y: i32) -> Self {
-        Location(x, y)
+        Coordinates(x, y)
     }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
@@ -109,5 +130,32 @@ impl Location {
             }
         }
         is_valid
+    }
+    fn get_quadrants(&self) -> Quadrants {
+        if self.0.is_positive() && self.1.is_positive() {
+            Quadrants::First
+        } else if self.0.is_negative() && self.1.is_positive() {
+            Quadrants::Second
+        } else if self.0.is_negative() && self.1.is_negative() {
+            Quadrants::Third
+        } else {
+            Quadrants::Fourth
+        }
+    }
+    pub fn get_distance(&self, from: Coordinates) -> Option<f64> {
+        let side_a = from.0 - self.0;
+        let side_b = from.1 - self.1;
+        let dest = f64::try_from(side_a.pow(2) + side_b.pow(2));
+        let sqrt = match dest {
+            Ok(val) => {
+                let sqrt = val.sqrt().floor();
+                Some(sqrt)
+            },
+            Err(e) => {
+                println!("get_distance() Error: \n{e}");
+                None
+            },
+        };
+        sqrt
     }
 }
