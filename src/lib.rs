@@ -18,8 +18,6 @@ pub trait GenericInfo {
     /// Displays a ship's current resources.
     fn display_resources(&self) {}
 }
-/// Shared trait for mother-type ships.
-pub trait isMother {}
 /// Implements a level cap on resources for ships.
 pub trait LevelCap {
     /// Limit the max level for resources on a spaceship.
@@ -35,16 +33,6 @@ pub trait TranserResources {
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) {}
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T) where T: TranserResources {}
-}
-
-/// Shared trait for recharging resources.
-pub trait ReceiveResources {
-    /// Recharge consumables.
-    fn receive_consumables(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
-    /// Recharge oxygen.
-    fn receive_oxygen(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
-    /// Recharge fuel.
-    fn receive_fuel(&mut self, _rate: i32, _mtr_ship: &mut mother_ship::MotherShip) {}
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
@@ -69,12 +57,6 @@ pub enum MotherShipDockStatus {
     Populated,
     /// Mothership docking area is empty.
     Empty,
-}
-/// Deprecated enums for ship names in favor of simple &str.
-#[derive(Debug)]
-pub enum Name<'a> {
-    /// Contains a ship's name. Takes &str.
-    Name(&'a str),
 }
 /// The main resources of the game.
 #[derive(Debug)]

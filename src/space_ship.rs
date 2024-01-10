@@ -2,7 +2,7 @@
 use crate::mother_ship::MotherShip;
 use crate::{
     Resources, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus,
-    SpaceShipDockStatus, ReceiveResources, TranserResources
+    SpaceShipDockStatus, TranserResources
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
