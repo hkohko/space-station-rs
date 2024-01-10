@@ -1,5 +1,5 @@
 #![warn(missing_docs)]
-use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources, isMother};
+use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources};
 /// Struct for motherships.
 #[derive(Debug)]
 pub struct MotherShip<'a> {
@@ -8,7 +8,6 @@ pub struct MotherShip<'a> {
     dock: MotherShipDockStatus,
     recharge: MotherShipRechargeStatus,
 }
-impl<'a> isMother for MotherShip<'a> {}
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
     /// A new mothership will:  
@@ -51,22 +50,22 @@ impl<'a> MotherShip<'a> {
     }
 }
 impl<'a> TranserResources for MotherShip<'a> {
-    fn give_resources(&mut self, rsc: Resources, rate: i32, spc_current_level: &i32) {
-        if spc_current_level == &100 {
+    fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) {
+        if spc_current_level == 100 {
             return
         }
         match rsc {
-            Resources::FoodWater(_) => {
+            Resources::FoodWater(rate) => {
                 if let Resources::FoodWater(val) = self.resource.consumable {
                     self.resource.consumable = Resources::FoodWater(val - rate);
                 }
             },
-            Resources::Oxygen(_) => {
+            Resources::Oxygen(rate) => {
                 if let Resources::Oxygen(val) = self.resource.oxygen {
                     self.resource.oxygen = Resources::Oxygen(val - rate);
                 }
             },
-            Resources::Fuel(_) => {
+            Resources::Fuel(rate) => {
                 if let Resources::Fuel(val) = self.resource.fuel {
                     self.resource.fuel = Resources::Fuel(val - rate);
                 }

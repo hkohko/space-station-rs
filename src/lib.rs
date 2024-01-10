@@ -33,8 +33,8 @@ pub trait TranserResources {
     /// let mut ada = MotherShip::new("Ada");
     /// ada.give_resources(Resources::FoodWater, 1, spc_current_level);
     /// ```
-    fn give_resources(&mut self, _rsc: Resources, _rate: i32, _current_level: &i32) {}
-    fn receive_resources<T>(&mut self, rate: i32, _rsc: Resources ,mtr_shp: &mut T) where T: isMother  {}
+    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) {}
+    fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T) where T: TranserResources {}
 }
 
 /// Shared trait for recharging resources.
