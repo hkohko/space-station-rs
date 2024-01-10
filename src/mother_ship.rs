@@ -1,4 +1,6 @@
+#![warn(missing_docs)]
 use crate::{GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources};
+/// Struct for motherships.
 #[derive(Debug)]
 pub struct MotherShip<'a> {
     name: &'a str,
@@ -7,6 +9,15 @@ pub struct MotherShip<'a> {
     recharge: MotherShipRechargeStatus,
 }
 impl<'a> MotherShip<'a> {
+    /// ## Creates a new mothership
+    /// A new mothership will:  
+    /// - ...have 500 units for each resources,
+    /// - ...have its dock status be MotherShipDockstatus::Empty,
+    /// - ...have its recharge status be MotherShipRechargeStatus::Idle.
+    /// ## Examples
+    /// ```
+    /// let mut ada = MotherShip::new("Ada");
+    /// ```
     pub fn new(n: &'a str) -> MotherShip<'a> {
         MotherShip {
             name: n,
@@ -19,6 +30,13 @@ impl<'a> MotherShip<'a> {
             recharge: MotherShipRechargeStatus::Idle,
         }
     }
+    /// Change the dock and/or recharge status of the mothership.
+    /// ## Examples
+    /// ```
+    /// let mut ada = MotherShip::new("Ada");
+    /// // Change ship's status to Populated.
+    /// ada.change_status(Some(MotherShipDocStatus::Populated), None);
+    /// ```
     pub fn change_status(&mut self, dock: Option<MotherShipDockStatus>, recharge: Option<MotherShipRechargeStatus>) {
         match dock {
             Some(val) => self.dock = val,
@@ -29,6 +47,12 @@ impl<'a> MotherShip<'a> {
             None => ()
         };
     }
+    /// Modify resources currently available on the mothership.
+    /// ## Examples
+    /// ```
+    /// let mut ada = MotherShip::new("Ada");
+    /// ada.modify_resources(Resources::FoodWater, 1, spc_current_level);
+    /// ```
     pub fn modify_resources(&mut self, rsc: Resources, rate: i32, spc_current_level: &i32) {
         if spc_current_level == &100 {
             return

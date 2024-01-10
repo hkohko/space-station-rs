@@ -1,3 +1,4 @@
+#![warn(missing_docs)]
 use crate::mother_ship::{MotherShip, self};
 use crate::{
     Resources, GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus,
@@ -6,6 +7,7 @@ use crate::{
 use rand::{self, prelude::*};
 use std::thread::sleep;
 use std::time::Duration;
+/// Struct for spaceships.
 #[derive(Debug)]
 pub struct SpaceShip<'a> {
     name: &'a str,
@@ -50,6 +52,13 @@ impl<'a> SpaceShip<'a> {
             self.display_info();
         }
     }
+    /// ## Creates a new spaceship
+    /// Every spaceship is instantied with a name and is given a randomized resource starting values in range of 50 to 100.
+    /// New spaceships are undocked, marked with SpaceShipDockStatus::Undocked
+    /// ## Examples
+    /// ```
+    /// let mut zeus = SpaceShip::new("Zeus");
+    /// ```
     pub fn new(n: &'a str) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
         let mut s = SpaceShip {
@@ -64,6 +73,14 @@ impl<'a> SpaceShip<'a> {
         s.fuel.adjust_spc_max_level();
         s
     }
+    /// Recharges a spaceship's resources.
+    /// Resources will be taken from the mothership, decreasing their resource storage.
+    /// ## Examples
+    /// ```
+    /// let mut ada = Mothership::new("Ada");
+    /// let mut zeus = SpaceShip::new("Zeus");
+    /// zeus.recharge(&mut ada);
+    /// ```
     pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
         self.docked(mtr_shp);
         self.recharge_backend(mtr_shp);
