@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 use crate::{
-    GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources,
+    GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources, Location
 };
 /// Struct for motherships.
 #[derive(Debug)]
@@ -9,6 +9,7 @@ pub struct MotherShip<'a> {
     resource: MotherShipResource,
     dock: MotherShipDockStatus,
     recharge: MotherShipRechargeStatus,
+    location: Location
 }
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
@@ -30,6 +31,7 @@ impl<'a> MotherShip<'a> {
             },
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
+            location: Location(0, 0),
         }
     }
 

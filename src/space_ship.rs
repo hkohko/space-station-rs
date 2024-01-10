@@ -2,7 +2,7 @@
 use crate::mother_ship::MotherShip;
 use crate::{
     GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Resources,
-    SpaceShipDockStatus, TranserResources,
+    SpaceShipDockStatus, TranserResources, Location, Move,
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
@@ -15,6 +15,7 @@ pub struct SpaceShip<'a> {
     oxygen: Resources,
     fuel: Resources,
     dock_status: SpaceShipDockStatus,
+    location: Location,
 }
 impl<'a> SpaceShip<'a> {
     fn docked(&mut self, mtr_shp: &mut MotherShip) {
@@ -55,7 +56,7 @@ impl<'a> SpaceShip<'a> {
             self.receive_resources(Resources::Oxygen(1), mtr_shp);
             self.receive_resources(Resources::FoodWater(1), mtr_shp);
             sleep(Duration::from_millis(200));
-            self.display_info();
+            self.display_resources();
         }
     }
     /// ## Creates a new spaceship
@@ -73,6 +74,7 @@ impl<'a> SpaceShip<'a> {
             oxygen: Resources::Oxygen(rng.gen_range(50..100)),
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
+            location: Location(rng.gen_range(5..100), rng.gen_range(5..100)),
         };
         s.consumables.adjust_spc_max_level();
         s.oxygen.adjust_spc_max_level();
@@ -132,6 +134,10 @@ impl<'a> TranserResources for SpaceShip<'a> {
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
         let n = self.name;
+        println!("--{n}'s Information--\nCurrent location: ({},{})", self.location.0, self.location.1);
+    }
+    fn display_resources(&self) {
+        let n = self.name;
         let c = match self.consumables {
             Resources::FoodWater(val) => val,
             _ => 0,
@@ -144,6 +150,16 @@ impl<'a> GenericInfo for SpaceShip<'a> {
             Resources::Fuel(val) => val,
             _ => 0,
         };
-        println!("--Ship Status--\nName: {n}\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
+        println!("--{n}'s Resources--\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
+    }
+}
+impl<'a> Move for SpaceShip<'a> {
+    fn to_location(&mut self, to: &Location) {
+        let within_bounds = to.max_bounds();
+        if within_bounds {
+            self.location.0 = to.0;
+            self.location.1 = to.1;
+            println!("Moved to:\nX: {}\nY: {}", to.0, to.1);
+        }
     }
 }

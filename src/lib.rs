@@ -1,4 +1,4 @@
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 //! # space-station-rs
 //!
 //! Exploring Rust's type system by creating a space station game.
@@ -29,7 +29,7 @@ pub trait TranserResources {
     /// ## Examples
     /// ```
     /// let mut ada = MotherShip::new("Ada");
-    /// ada.give_resources(Resources::FoodWater, 1, spc_current_level);
+    /// ada.give_resources(Resources::FoodWater(1), spc_current_level);
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) {}
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
@@ -37,6 +37,9 @@ pub trait TranserResources {
         T: TranserResources,
     {
     }
+}
+pub trait Move {
+    fn to_location(&mut self, _to: &Location) {}
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
@@ -85,5 +88,26 @@ impl LevelCap for Resources {
                 *val = std::cmp::min(*val, 100);
             }
         };
+    }
+}
+#[derive(Debug)]
+pub struct Location(i32, i32);
+
+impl Location {
+    pub fn new(x: i32, y: i32) -> Self {
+        Location(x, y)
+    }
+    fn max_bounds(&self) -> bool {
+        let mut is_valid = true;
+        let values = [self.0, self.1];
+        for item in values.into_iter().enumerate() {
+            let (idx, val) = item;
+            if val < -1000 || val > 1000 {
+                is_valid = false;
+                let axis = if idx == 0 {"x"} else {"y"};
+                println!("{axis} value is out of bounds: {val}.")
+            }
+        }
+        is_valid
     }
 }
