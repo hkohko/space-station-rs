@@ -1,7 +1,5 @@
 #![warn(missing_docs)]
-use crate::{
-    GenericInfo, MotherShipDockStatus, MotherShipRechargeStatus, Resources, TranserResources, Coordinates
-};
+use crate::prelude::*;
 /// Struct for motherships.
 #[derive(Debug)]
 pub struct MotherShip<'a> {
@@ -19,6 +17,7 @@ impl<'a> MotherShip<'a> {
     /// - ...have its recharge status be MotherShipRechargeStatus::Idle.
     /// ## Examples
     /// ```
+    /// # use space_station::mother_ship::MotherShip;
     /// let mut ada = MotherShip::new("Ada");
     /// ```
     pub fn new(n: &'a str) -> MotherShip<'a> {
@@ -38,9 +37,10 @@ impl<'a> MotherShip<'a> {
     /// Change the dock and/or recharge status of the mothership.
     /// ## Examples
     /// ```
+    /// # use space_station::prelude::*;
     /// let mut ada = MotherShip::new("Ada");
     /// // Change ship's status to Populated.
-    /// ada.change_status(Some(MotherShipDocStatus::Populated), None);
+    /// ada.change_status(Some(MotherShipDockStatus::Populated), None);
     /// ```
     pub fn change_status(
         &mut self,
@@ -57,7 +57,7 @@ impl<'a> MotherShip<'a> {
         };
     }
 }
-impl<'a> TranserResources for MotherShip<'a> {
+impl<'a> TransferResources for MotherShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
         if spc_current_level == 100 {
             return false

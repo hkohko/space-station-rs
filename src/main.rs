@@ -1,4 +1,4 @@
-use space_station::{mother_ship::MotherShip, space_ship::SpaceShip, GenericInfo, Move, Coordinates, Resources, environment_resources::EnvResource};
+use space_station::prelude::*;
 fn main() {}
 #[test]
 fn randomize_stuff() {
@@ -22,10 +22,12 @@ fn recharge_features() {
 #[test]
 fn move_features() {
     let mut zeus = SpaceShip::new("Zeus");
-    let new_location = Coordinates::new(999,-999);
+    let too_far_location = Coordinates::new(999,-999);
+    let good_location = Coordinates::new(100, 100);
     zeus.display_info();
     zeus.display_resources();
-    zeus.to_location(&new_location);
+    zeus.to_location(&too_far_location);
+    zeus.to_location(&good_location);
     zeus.display_info();
     zeus.display_resources();
 }

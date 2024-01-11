@@ -9,6 +9,8 @@
 
 use environment_resources::EnvResource;
 use rand::{self, Rng};
+
+pub mod prelude;
 /// Structs, Enums, and methods for motherships.
 pub mod mother_ship;
 /// Structs, Enums, and methods for spaceships.
@@ -29,17 +31,18 @@ pub trait LevelCap {
     fn adjust_spc_min_level(&mut self) {}
 }
 /// Shared trait for ships that can transfer resources, be it receiving or giving.
-pub trait TranserResources {
+pub trait TransferResources {
     /// Modify resources currently available on the mothership.
     /// ## Examples
     /// ```
+    /// # use space_station::prelude::*;
     /// let mut ada = MotherShip::new("Ada");
-    /// ada.give_resources(Resources::FoodWater(1), spc_current_level);
+    /// ada.give_resources(Resources::FoodWater(1), 100);
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {true}
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
     where
-        T: TranserResources,
+        T: TransferResources,
     {
     }
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
@@ -164,20 +167,11 @@ impl Coordinates {
             Quadrants::Fourth
         }
     }
-    fn get_distance(&self, from: Coordinates) -> Option<f64> {
+    fn get_distance(&self, from: Coordinates) -> f64 {
         let side_a = from.0 - self.0;
         let side_b = from.1 - self.1;
-        let dest = f64::try_from(side_a.pow(2) + side_b.pow(2));
-        let sqrt = match dest {
-            Ok(val) => {
-                let sqrt = val.sqrt().floor();
-                Some(sqrt)
-            },
-            Err(e) => {
-                println!("get_distance() Error: \n{e}");
-                None
-            },
-        };
+        let dest = f64::from(side_a.pow(2) + side_b.pow(2));
+        let sqrt = dest.sqrt().floor();
         sqrt
     }
 }

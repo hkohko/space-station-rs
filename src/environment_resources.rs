@@ -5,9 +5,9 @@ pub struct EnvResource {
     coordinates: Coordinates,
 }
 impl EnvResource {
-    pub fn new(contains: i32) -> EnvResource {
+    pub fn new(at_most: i32) -> EnvResource {
         EnvResource {
-            kind: Resources::randomize(contains),
+            kind: Resources::randomize(at_most),
             coordinates: Coordinates::randomize(),
         }
     }

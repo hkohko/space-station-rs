@@ -1,9 +1,6 @@
 #![warn(missing_docs)]
 use crate::mother_ship::MotherShip;
-use crate::{
-    GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Resources,
-    SpaceShipDockStatus, TranserResources, Coordinates, Move, EnvResource
-};
+use crate::prelude::*;
 use rand::{self, prelude::*};
 use std::thread::sleep;
 use std::time::Duration;
@@ -64,6 +61,7 @@ impl<'a> SpaceShip<'a> {
     /// New spaceships are undocked, marked with SpaceShipDockStatus::Undocked
     /// ## Examples
     /// ```
+    /// # use space_station::prelude::*;
     /// let mut zeus = SpaceShip::new("Zeus");
     /// ```
     pub fn new(n: &'a str) -> SpaceShip<'a> {
@@ -85,7 +83,8 @@ impl<'a> SpaceShip<'a> {
     /// Resources will be taken from the mothership, decreasing their resource storage.
     /// ## Examples
     /// ```
-    /// let mut ada = Mothership::new("Ada");
+    /// # use space_station::prelude::*;
+    /// let mut ada = MotherShip::new("Ada");
     /// let mut zeus = SpaceShip::new("Zeus");
     /// zeus.recharge(&mut ada);
     /// ```
@@ -95,7 +94,7 @@ impl<'a> SpaceShip<'a> {
         self.undocked(mtr_shp);
     }
 }
-impl<'a> TranserResources for SpaceShip<'a> {
+impl<'a> TransferResources for SpaceShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
         match rsc {
             Resources::FoodWater(val) => {
@@ -129,7 +128,7 @@ impl<'a> TranserResources for SpaceShip<'a> {
     }
     fn receive_resources<T>(&mut self, rsc: Resources, mtr_shp: &mut T)
     where
-        T: TranserResources,
+        T: TransferResources,
     {
         match rsc {
             Resources::FoodWater(rate) => {
@@ -191,12 +190,7 @@ impl<'a> Move for SpaceShip<'a> {
         let within_bounds = to.max_bounds();
         if within_bounds {
             let dist = to.get_distance(Coordinates::new(self.location.0, self.location.1));
-            let fuel_to_spend = match dist {
-                Some(val) => {
-                    (val * 0.2).floor()
-                }
-                None => 0.0
-            };
+            let fuel_to_spend = (dist * 0.2).floor();
             let current_fuel = match self.fuel {
                 Resources::Fuel(val) => val,
                 _ => 0,
