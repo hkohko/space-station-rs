@@ -7,10 +7,14 @@
 //! ['Building a space station in Rust'](https://www.youtube.com/watch?v=7GzQArrek7A&pp=ygUdbm8gYm9pbGVycGxhdGUgcnVzdCBzcGFjZXNoaXA%3D)
 //!
 
+use environment_resources::EnvResource;
+use rand::{self, Rng};
 /// Structs, Enums, and methods for motherships.
 pub mod mother_ship;
 /// Structs, Enums, and methods for spaceships.
 pub mod space_ship;
+/// Structs, Enums, and methods for free-flying resources.
+pub mod environment_resources;
 /// Shared trait for generic information of a ship.
 pub trait GenericInfo {
     /// Displays a ship's general information.
@@ -38,6 +42,7 @@ pub trait TranserResources {
         T: TranserResources,
     {
     }
+    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
 pub trait Move {
     fn to_location(&mut self, _to: &Coordinates) {}
@@ -67,7 +72,7 @@ pub enum MotherShipDockStatus {
     Empty,
 }
 /// The main resources of the game.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Resources {
     /// Consumables.
     FoodWater(i32),
@@ -75,6 +80,19 @@ pub enum Resources {
     Oxygen(i32),
     /// Rocket fuel.
     Fuel(i32),
+}
+impl Resources {
+    pub fn randomize(max: i32) -> Resources {
+        let mut rng = rand::thread_rng();
+        let val = rng.gen_range(0..=2);
+        let range = 5..=max;
+        match val {
+            0 => Resources::FoodWater(rng.gen_range(range)),
+            1 => Resources::Oxygen(rng.gen_range(range)),
+            2 => Resources::Fuel(rng.gen_range(range)),
+            _ => Resources::Fuel(rng.gen_range(range)),
+        }
+    }
 }
 impl LevelCap for Resources {
     fn adjust_spc_max_level(&mut self) {
@@ -105,7 +123,6 @@ impl LevelCap for Resources {
     }
 }
 #[derive(Debug)]
-pub struct Coordinates(i32, i32);
 pub enum Quadrants {
     First,
     Second,
@@ -113,10 +130,15 @@ pub enum Quadrants {
     Fourth,
 }
 pub struct Location();
-
+#[derive(Debug, Clone, Copy)]
+pub struct Coordinates(i32, i32);
 impl Coordinates {
     pub fn new(x: i32, y: i32) -> Self {
         Coordinates(x, y)
+    }
+    pub fn randomize() -> Coordinates {
+        let mut rng = rand::thread_rng();
+        Coordinates::new(rng.gen_range(-999..1000), rng.gen_range(-999..1000))
     }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
@@ -142,7 +164,7 @@ impl Coordinates {
             Quadrants::Fourth
         }
     }
-    pub fn get_distance(&self, from: Coordinates) -> Option<f64> {
+    fn get_distance(&self, from: Coordinates) -> Option<f64> {
         let side_a = from.0 - self.0;
         let side_b = from.1 - self.1;
         let dest = f64::try_from(side_a.pow(2) + side_b.pow(2));

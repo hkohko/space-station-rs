@@ -2,7 +2,7 @@
 use crate::mother_ship::MotherShip;
 use crate::{
     GenericInfo, LevelCap, MotherShipDockStatus, MotherShipRechargeStatus, Resources,
-    SpaceShipDockStatus, TranserResources, Coordinates, Move,
+    SpaceShipDockStatus, TranserResources, Coordinates, Move, EnvResource
 };
 use rand::{self, prelude::*};
 use std::thread::sleep;
@@ -160,6 +160,8 @@ impl<'a> TranserResources for SpaceShip<'a> {
                 self.fuel.adjust_spc_max_level();
             }
         }
+    }
+    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {
     }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
