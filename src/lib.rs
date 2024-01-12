@@ -1,4 +1,4 @@
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 //! # space-station-rs
 //!
 //! Exploring Rust's type system by creating a space station game.
@@ -9,7 +9,7 @@
 
 use environment_resources::EnvResource;
 use rand::{self, Rng};
-
+/// Imports all necessary modules from this library for convenience.
 pub mod prelude;
 /// Structs, Enums, and methods for motherships.
 pub mod mother_ship;
@@ -39,7 +39,7 @@ pub trait LevelCap {
 }
 /// Shared trait for ships that can transfer resources, be it receiving or giving.
 pub trait TransferResources {
-    /// Modify resources currently available on the mothership.
+    /// Spend resources currently available on a ship.
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
@@ -47,13 +47,24 @@ pub trait TransferResources {
     /// ada.give_resources(Resources::FoodWater(1), 100);
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {true}
+    /// Receive resources to a ship. 
+    /// - Requires a resource/another ship that is capable of transferring resources.
+    /// ## Examples
+    /// ```
+    /// # use space_station::prelude::*;
+    /// let mut ada = MotherShip::new("Ada");
+    /// let mut zeus = SpaceShip::new("Zeus");
+    /// zeus.receive_resources(Resources::FoodWater(20), &mut ada);
+    /// ```
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
     where
         T: TransferResources,
     {
     }
+    /// Implementation WIP
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
+/// Shared trait for ships that can move.
 pub trait Move {
     fn to_location(&mut self, _to: &Coordinates) -> bool {false}
 }
@@ -153,6 +164,7 @@ pub enum Resources {
     Fuel(i32),
 }
 impl Resources {
+    /// Generate a resource with randomized variant and amount.
     pub fn randomize(max: i32) -> Resources {
         let mut rng = rand::thread_rng();
         let val = rng.gen_range(0..=2);
@@ -194,19 +206,28 @@ impl LevelCap for Resources {
     }
 }
 #[derive(Debug)]
+/// Variants for quadrants, considering the coordinates of an object in the game.
 pub enum Quadrants {
+    /// (x, y)
     First,
+    /// (-x, y)
     Second,
+    /// (-x, -y)
     Third,
+    /// (x, -y)
     Fourth,
 }
+/// Implementation WIP
 pub struct Location();
+/// Coordinates of an object in the game.
 #[derive(Debug, Clone, Copy)]
 pub struct Coordinates(i32, i32);
 impl Coordinates {
+    /// Creates a new coordinate.
     pub fn new(x: i32, y: i32) -> Self {
         Coordinates(x, y)
     }
+    /// Randomly generates a coordinate, within bounds of the playable game area (WIP)
     pub fn randomize() -> Coordinates {
         let mut rng = rand::thread_rng();
         Coordinates::new(rng.gen_range(-999..1000), rng.gen_range(-999..1000))
