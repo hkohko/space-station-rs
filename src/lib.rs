@@ -17,6 +17,9 @@ pub mod mother_ship;
 pub mod space_ship;
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
+/// Tests for space-station-rs library
+#[allow(unused_imports)]
+pub mod tests;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
     fn get_levels(&self, _rsc: Resources) -> i32 {0}

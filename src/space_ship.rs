@@ -84,11 +84,11 @@ impl<'a> SpaceShip<'a> {
     /// # use space_station::prelude::*;
     /// let mut ada = MotherShip::new("Ada");
     /// let mut zeus = SpaceShip::new("Zeus");
-    /// zeus.recharge(&mut ada);
+    /// zeus.recharge(&mut ada, 0);
     /// ```
-    pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
+    pub fn recharge(&mut self, mtr_shp: &mut MotherShip, recharge_ms: u64) {
         self.docked(mtr_shp);
-        self.recharge_backend(mtr_shp, 100);
+        self.recharge_backend(mtr_shp, recharge_ms);
         self.undocked(mtr_shp);
     }
 }
