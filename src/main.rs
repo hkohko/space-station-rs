@@ -1,6 +1,28 @@
 use space_station::prelude::*;
 fn main() {}
 #[test]
+fn storage_negative() {
+    let mut new_stg = Storage::new(-10);
+    new_stg.adjust_min_level();
+    let consumables = new_stg.get_stg_values(Resources::FoodWater(0));
+    let oxygen = new_stg.get_stg_values(Resources::Oxygen(0));
+    let fuel = new_stg.get_stg_values(Resources::Fuel(0));
+    assert_eq!(consumables, 0);
+    assert_eq!(oxygen, 0);
+    assert_eq!(fuel, 0);
+}
+#[test]
+fn storage_positive() {
+    let mut new_stg = Storage::new(100);
+    new_stg.adjust_min_level();
+    let consumables = new_stg.get_stg_values(Resources::FoodWater(0));
+    let oxygen = new_stg.get_stg_values(Resources::Oxygen(0));
+    let fuel = new_stg.get_stg_values(Resources::Fuel(0));
+    assert_eq!(consumables, 100);
+    assert_eq!(oxygen, 100);
+    assert_eq!(fuel, 100);
+}
+#[test]
 fn randomize_stuff() {
     let new_coord = Coordinates::randomize();
     dbg!(&new_coord);

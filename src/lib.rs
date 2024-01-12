@@ -26,6 +26,8 @@ pub trait GenericInfo {
 }
 /// Implements a level cap on resources for ships.
 pub trait LevelCap {
+    /// General minimum level cap.
+    fn adjust_min_level(&mut self) {}
     /// Limit the max level for resources on a spaceship.
     fn adjust_spc_max_level(&mut self) {}
     fn adjust_spc_min_level(&mut self) {}
@@ -49,6 +51,65 @@ pub trait TransferResources {
 }
 pub trait Move {
     fn to_location(&mut self, _to: &Coordinates) {}
+}
+#[derive(Debug)]
+pub struct Storage {
+    consumable: Resources,
+    oxygen: Resources,
+    fuel: Resources,
+}
+impl Storage {
+    pub fn new(amount: i32) -> Storage {
+        Storage {
+            consumable: Resources::FoodWater(amount),
+            oxygen: Resources::Oxygen(amount),
+            fuel: Resources::Fuel(amount)
+        }
+    }
+    pub fn get_stg_values(&self, rsc: Resources) -> i32 {
+        match rsc {
+            Resources::Fuel(_) => {
+                if let Resources::Fuel(val) = self.fuel {
+                    val
+                } else {
+                    0
+                }
+            },
+            Resources::Oxygen(_) => {
+                if let Resources::Oxygen(val) = self.oxygen {
+                    val
+                } else {
+                    0
+                }
+            },
+            Resources::FoodWater(_) => {
+                if let Resources::FoodWater(val) = self.consumable {
+                    val
+                } else {
+                    0
+                }
+            }
+            
+        }
+    }
+}
+impl LevelCap for Storage {
+    fn adjust_min_level(&mut self) {
+        let current_levels = [self.consumable, self.oxygen, self.fuel];
+        for res in current_levels.into_iter() {
+            match res {
+                Resources::FoodWater(val) => {
+                    self.consumable = Resources::FoodWater(std::cmp::max(val, 0));
+                },
+                Resources::Oxygen(val) => {
+                    self.oxygen = Resources::Oxygen(std::cmp::max(val, 0));
+                },
+                Resources::Fuel(val) => {
+                    self.fuel = Resources::Fuel(std::cmp::max(val, 0));
+                }
+            }
+        }
+    }
 }
 /// Spaceship docking enums.
 #[derive(Debug)]

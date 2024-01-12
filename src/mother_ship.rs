@@ -7,7 +7,8 @@ pub struct MotherShip<'a> {
     resource: MotherShipResource,
     dock: MotherShipDockStatus,
     recharge: MotherShipRechargeStatus,
-    location: Coordinates
+    location: Coordinates,
+    storage: Storage,
 }
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
@@ -31,6 +32,7 @@ impl<'a> MotherShip<'a> {
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
             location: Coordinates(0, 0),
+            storage: Storage::new(100)
         }
     }
 

@@ -11,6 +11,7 @@ pub struct SpaceShip<'a> {
     consumables: Resources,
     oxygen: Resources,
     fuel: Resources,
+    storage: Storage,
     dock_status: SpaceShipDockStatus,
     location: Coordinates,
 }
@@ -73,6 +74,7 @@ impl<'a> SpaceShip<'a> {
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
             location: Coordinates(rng.gen_range(5..100), rng.gen_range(5..100)),
+            storage: Storage::new(0),
         };
         s.consumables.adjust_spc_max_level();
         s.oxygen.adjust_spc_max_level();
