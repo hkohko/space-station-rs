@@ -1,5 +1,15 @@
 use crate::prelude::*;
 #[test]
+fn transfer_storage() {
+    let mut new_ship = SpaceShip::new("Zeus");
+    let mut new_env_resources = EnvResource::randomize(50);
+    dbg!(&new_ship);
+    dbg!(&new_env_resources.get_kind());
+    new_ship.get_env_resources(&mut new_env_resources);
+    dbg!(&new_ship);
+    dbg!(&new_env_resources.get_kind());
+}
+#[test]
 fn storage_negative() {
     let mut new_stg = Storage::new(-10);
     new_stg.adjust_min_level();

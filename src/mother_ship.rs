@@ -62,8 +62,8 @@ impl<'a> TransferResources for MotherShip<'a> {
         }
         match rsc {
             Resources::FoodWater(rate) => {
-                if let Resources::FoodWater(val) = self.resource.consumable {
-                    self.resource.consumable = Resources::FoodWater(val - rate);
+                if let Resources::Oxygen(val) = self.resource.consumable {
+                    self.resource.consumable = Resources::Oxygen(val - rate);
                     return true
                 }
             }
@@ -97,7 +97,7 @@ impl<'a> GenericInfo for MotherShip<'a> {
     }
     fn display_resources(&self) {
         let consumables = {
-            if let Resources::FoodWater(val) = self.resource.consumable {
+            if let Resources::Oxygen(val) = self.resource.consumable {
                 val
             } else {
                 0
@@ -130,7 +130,7 @@ struct MotherShipResource {
 impl MotherShipResource {
     fn new(amount: i32) -> MotherShipResource{
         MotherShipResource {
-            consumable: Resources::FoodWater(amount),
+            consumable: Resources::Oxygen(amount),
             oxygen: Resources::Oxygen(amount),
             fuel: Resources::Fuel(amount),
         }

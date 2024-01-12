@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 //! # space-station-rs
 //!
 //! Exploring Rust's type system by creating a space station game.
@@ -61,6 +61,10 @@ pub trait TransferResources {
         T: TransferResources,
     {
     }
+    fn receive_to_storage(&mut self, _rsc: Resources) 
+    {
+        
+    }
     /// Implementation WIP
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
@@ -102,7 +106,7 @@ impl GetResourceLevels for Storage {
                 }
             },
             Resources::FoodWater(_) => {
-                if let Resources::FoodWater(val) = self.consumable {
+                if let Resources::Oxygen(val) = self.consumable {
                     val
                 } else {
                     0
@@ -117,7 +121,7 @@ impl LevelCap for Storage {
         for res in current_levels.into_iter() {
             match res {
                 Resources::FoodWater(val) => {
-                    self.consumable = Resources::FoodWater(std::cmp::max(val, 0));
+                    self.consumable = Resources::Oxygen(std::cmp::max(val, 0));
                 },
                 Resources::Oxygen(val) => {
                     self.oxygen = Resources::Oxygen(std::cmp::max(val, 0));
@@ -170,7 +174,7 @@ impl Resources {
         let val = rng.gen_range(0..=2);
         let range = 5..=max;
         match val {
-            0 => Resources::FoodWater(rng.gen_range(range)),
+            0 => Resources::Oxygen(rng.gen_range(range)),
             1 => Resources::Oxygen(rng.gen_range(range)),
             2 => Resources::Fuel(rng.gen_range(range)),
             _ => Resources::Fuel(rng.gen_range(range)),
