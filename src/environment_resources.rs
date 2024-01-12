@@ -6,8 +6,8 @@ pub struct EnvResource {
     coordinates: Coordinates,
 }
 impl EnvResource {
-    /// Creates a new resource with randomized values.
-    pub fn new(at_most: i32) -> EnvResource {
+    pub fn randomize(at_most: i32) -> EnvResource {
+
         EnvResource {
             kind: Resources::randomize(at_most),
             coordinates: Coordinates::randomize(),

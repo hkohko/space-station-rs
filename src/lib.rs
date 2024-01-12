@@ -17,7 +17,13 @@ pub mod mother_ship;
 pub mod space_ship;
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
+/// Tests for space-station-rs library
+#[allow(unused_imports)]
+pub mod tests;
 /// Shared trait for generic information of a ship.
+pub trait GetResourceLevels {
+    fn get_levels(&self, _rsc: Resources) -> i32 {0}
+}
 pub trait GenericInfo {
     /// Displays a ship's general information.
     fn display_info(&self) {}
@@ -26,10 +32,10 @@ pub trait GenericInfo {
 }
 /// Implements a level cap on resources for ships.
 pub trait LevelCap {
-    /// Limit the max level for resources on a spaceship.
-    fn adjust_spc_max_level(&mut self) {}
-    /// Limit the minimum level for resources on a spaceship.
-    fn adjust_spc_min_level(&mut self) {}
+    /// General minimum level cap.
+    fn adjust_min_level(&mut self) {}
+    /// General maximum level cap.
+    fn adjust_max_level(&mut self) {}
 }
 /// Shared trait for ships that can transfer resources, be it receiving or giving.
 pub trait TransferResources {
@@ -60,8 +66,68 @@ pub trait TransferResources {
 }
 /// Shared trait for ships that can move.
 pub trait Move {
-    /// Move a ship to a certain coordinate with its fuel taken into account.
-    fn to_location(&mut self, _to: &Coordinates) {}
+    fn to_location(&mut self, _to: &Coordinates) -> bool {false}
+}
+#[derive(Debug)]
+pub struct Storage {
+    consumable: Resources,
+    oxygen: Resources,
+    fuel: Resources,
+}
+impl Storage {
+    pub fn new(amount: i32) -> Storage {
+        Storage {
+            consumable: Resources::FoodWater(amount),
+            oxygen: Resources::Oxygen(amount),
+            fuel: Resources::Fuel(amount)
+        }
+    }
+    
+}
+impl GetResourceLevels for Storage {
+    fn get_levels(&self, rsc: Resources) -> i32 {
+        match rsc {
+            Resources::Fuel(_) => {
+                if let Resources::Fuel(val) = self.fuel {
+                    val
+                } else {
+                    0
+                }
+            },
+            Resources::Oxygen(_) => {
+                if let Resources::Oxygen(val) = self.oxygen {
+                    val
+                } else {
+                    0
+                }
+            },
+            Resources::FoodWater(_) => {
+                if let Resources::FoodWater(val) = self.consumable {
+                    val
+                } else {
+                    0
+                }
+            }
+        }
+    }
+}
+impl LevelCap for Storage {
+    fn adjust_min_level(&mut self) {
+        let current_levels = [self.consumable, self.oxygen, self.fuel];
+        for res in current_levels.into_iter() {
+            match res {
+                Resources::FoodWater(val) => {
+                    self.consumable = Resources::FoodWater(std::cmp::max(val, 0));
+                },
+                Resources::Oxygen(val) => {
+                    self.oxygen = Resources::Oxygen(std::cmp::max(val, 0));
+                },
+                Resources::Fuel(val) => {
+                    self.fuel = Resources::Fuel(std::cmp::max(val, 0));
+                }
+            }
+        }
+    }
 }
 /// Spaceship docking enums.
 #[derive(Debug)]
@@ -112,7 +178,7 @@ impl Resources {
     }
 }
 impl LevelCap for Resources {
-    fn adjust_spc_max_level(&mut self) {
+    fn adjust_max_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::min(*val, 100);
@@ -125,7 +191,7 @@ impl LevelCap for Resources {
             }
         };
     }
-    fn adjust_spc_min_level(&mut self) {
+    fn adjust_min_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::max(*val, 0);

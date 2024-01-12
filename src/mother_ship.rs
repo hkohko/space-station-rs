@@ -7,7 +7,8 @@ pub struct MotherShip<'a> {
     resource: MotherShipResource,
     dock: MotherShipDockStatus,
     recharge: MotherShipRechargeStatus,
-    location: Coordinates
+    location: Coordinates,
+    storage: Storage,
 }
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
@@ -23,14 +24,11 @@ impl<'a> MotherShip<'a> {
     pub fn new(n: &'a str) -> MotherShip<'a> {
         MotherShip {
             name: n,
-            resource: MotherShipResource {
-                consumable: Resources::FoodWater(500),
-                oxygen: Resources::Oxygen(500),
-                fuel: Resources::Fuel(500),
-            },
+            resource: MotherShipResource::new(500),
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
             location: Coordinates(0, 0),
+            storage: Storage::new(100),
         }
     }
 
@@ -128,4 +126,13 @@ struct MotherShipResource {
     consumable: Resources,
     oxygen: Resources,
     fuel: Resources,
+}
+impl MotherShipResource {
+    fn new(amount: i32) -> MotherShipResource{
+        MotherShipResource {
+            consumable: Resources::FoodWater(amount),
+            oxygen: Resources::Oxygen(amount),
+            fuel: Resources::Fuel(amount),
+        }
+    }
 }
