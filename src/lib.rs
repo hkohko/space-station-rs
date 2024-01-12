@@ -18,6 +18,9 @@ pub mod space_ship;
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
 /// Shared trait for generic information of a ship.
+pub trait GetResourceLevels {
+    fn get_levels(&self, _rsc: Resources) -> i32 {0}
+}
 pub trait GenericInfo {
     /// Displays a ship's general information.
     fn display_info(&self) {}
@@ -28,9 +31,8 @@ pub trait GenericInfo {
 pub trait LevelCap {
     /// General minimum level cap.
     fn adjust_min_level(&mut self) {}
-    /// Limit the max level for resources on a spaceship.
-    fn adjust_spc_max_level(&mut self) {}
-    fn adjust_spc_min_level(&mut self) {}
+    /// General maximum level cap.
+    fn adjust_max_level(&mut self) {}
 }
 /// Shared trait for ships that can transfer resources, be it receiving or giving.
 pub trait TransferResources {
@@ -50,7 +52,7 @@ pub trait TransferResources {
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
 pub trait Move {
-    fn to_location(&mut self, _to: &Coordinates) {}
+    fn to_location(&mut self, _to: &Coordinates) -> bool {false}
 }
 #[derive(Debug)]
 pub struct Storage {
@@ -66,7 +68,10 @@ impl Storage {
             fuel: Resources::Fuel(amount)
         }
     }
-    pub fn get_stg_values(&self, rsc: Resources) -> i32 {
+    
+}
+impl GetResourceLevels for Storage {
+    fn get_levels(&self, rsc: Resources) -> i32 {
         match rsc {
             Resources::Fuel(_) => {
                 if let Resources::Fuel(val) = self.fuel {
@@ -89,7 +94,6 @@ impl Storage {
                     0
                 }
             }
-            
         }
     }
 }
@@ -159,7 +163,7 @@ impl Resources {
     }
 }
 impl LevelCap for Resources {
-    fn adjust_spc_max_level(&mut self) {
+    fn adjust_max_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::min(*val, 100);
@@ -172,7 +176,7 @@ impl LevelCap for Resources {
             }
         };
     }
-    fn adjust_spc_min_level(&mut self) {
+    fn adjust_min_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::max(*val, 0);

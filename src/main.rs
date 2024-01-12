@@ -4,9 +4,9 @@ fn main() {}
 fn storage_negative() {
     let mut new_stg = Storage::new(-10);
     new_stg.adjust_min_level();
-    let consumables = new_stg.get_stg_values(Resources::FoodWater(0));
-    let oxygen = new_stg.get_stg_values(Resources::Oxygen(0));
-    let fuel = new_stg.get_stg_values(Resources::Fuel(0));
+    let consumables = new_stg.get_levels(Resources::FoodWater(0));
+    let oxygen = new_stg.get_levels(Resources::Oxygen(0));
+    let fuel = new_stg.get_levels(Resources::Fuel(0));
     assert_eq!(consumables, 0);
     assert_eq!(oxygen, 0);
     assert_eq!(fuel, 0);
@@ -15,9 +15,9 @@ fn storage_negative() {
 fn storage_positive() {
     let mut new_stg = Storage::new(100);
     new_stg.adjust_min_level();
-    let consumables = new_stg.get_stg_values(Resources::FoodWater(0));
-    let oxygen = new_stg.get_stg_values(Resources::Oxygen(0));
-    let fuel = new_stg.get_stg_values(Resources::Fuel(0));
+    let consumables = new_stg.get_levels(Resources::FoodWater(0));
+    let oxygen = new_stg.get_levels(Resources::Oxygen(0));
+    let fuel = new_stg.get_levels(Resources::Fuel(0));
     assert_eq!(consumables, 100);
     assert_eq!(oxygen, 100);
     assert_eq!(fuel, 100);
@@ -28,7 +28,7 @@ fn randomize_stuff() {
     dbg!(&new_coord);
     let new_resources = Resources::randomize(50);
     dbg!(&new_resources);
-    let new_env_resource = EnvResource::new(50);
+    let new_env_resource = EnvResource::randomize(50);
     dbg!(&new_env_resource.get_kind());
     dbg!(&new_env_resource.get_coordinates());
     dbg!(&new_env_resource);
@@ -37,9 +37,21 @@ fn randomize_stuff() {
 fn recharge_features() {
     let mut zeus = SpaceShip::new("Zeus");
     let mut ada = MotherShip::new("Ada");
+    let initial_consumables = zeus.get_levels(Resources::Fuel(0));
+    let initial_oxygen = zeus.get_levels(Resources::Oxygen(0));
+    let initial_fuel = zeus.get_levels(Resources::Fuel(0));
     ada.display_resources();
     zeus.recharge(&mut ada);
+    let after_consumables = zeus.get_levels(Resources::Fuel(0));
+    let after_oxygen = zeus.get_levels(Resources::Oxygen(0));
+    let after_fuel = zeus.get_levels(Resources::Fuel(0));
     ada.display_resources();
+    let diff_consumables = 100 - after_consumables;
+    let diff_oxygen = 100 - after_oxygen;
+    let diff_fuel = 100 - after_fuel;
+    assert_eq!(diff_consumables, 0);
+    assert_eq!(diff_fuel, 0);
+    assert_eq!(diff_oxygen, 0);
 }
 #[test]
 fn move_features() {
@@ -48,8 +60,10 @@ fn move_features() {
     let good_location = Coordinates::new(100, 100);
     zeus.display_info();
     zeus.display_resources();
-    zeus.to_location(&too_far_location);
-    zeus.to_location(&good_location);
+    let must_fail = zeus.to_location(&too_far_location);
+    let must_pass = zeus.to_location(&good_location);
     zeus.display_info();
     zeus.display_resources();
+    assert_eq!(must_fail, false);
+    assert_eq!(must_pass, true)
 }
