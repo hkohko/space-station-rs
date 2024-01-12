@@ -2,10 +2,12 @@ use crate::prelude::*;
 #[test]
 fn transfer_storage() {
     let mut new_ship = SpaceShip::new("Zeus");
-    let mut new_env_resources = EnvResource::randomize(50);
+    let mut new_env_resources = EnvResource::randomize(50, 0);
+    let mut env_resources2 = EnvResource::randomize(100, 1);
     dbg!(&new_ship);
     dbg!(&new_env_resources.get_kind());
     new_ship.get_env_resources(&mut new_env_resources);
+    new_ship.get_env_resources(&mut env_resources2);
     dbg!(&new_ship);
     dbg!(&new_env_resources.get_kind());
 }
@@ -37,7 +39,7 @@ fn randomize_stuff() {
     dbg!(&new_coord);
     let new_resources = Resources::randomize(50);
     dbg!(&new_resources);
-    let new_env_resource = EnvResource::randomize(50);
+    let new_env_resource = EnvResource::randomize(50, 3);
     dbg!(&new_env_resource.get_kind());
     dbg!(&new_env_resource.get_coordinates());
     dbg!(&new_env_resource);

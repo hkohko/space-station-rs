@@ -17,9 +17,11 @@ pub mod mother_ship;
 pub mod prelude;
 /// Structs, Enums, and methods for spaceships.
 pub mod space_ship;
-/// Tests for space-station-rs library
+/// Tests for space-station-rs library.
 #[allow(unused_imports)]
 pub mod tests;
+/// Experiemental code to test ideas.
+pub mod experimentals;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
     fn get_levels(&self, _rsc: Resources) -> i32 {
@@ -31,6 +33,8 @@ pub trait GenericInfo {
     fn display_info(&self) {}
     /// Displays a ship's current resources.
     fn display_resources(&self) {}
+    /// Display a ship's current storage.
+    fn display_storage(&self) {}
 }
 /// Implements a level cap on resources for ships.
 pub trait LevelCap {
@@ -176,7 +180,7 @@ impl Resources {
         let val = rng.gen_range(0..=2);
         let range = 5..=max;
         match val {
-            0 => Resources::Oxygen(rng.gen_range(range)),
+            0 => Resources::FoodWater(rng.gen_range(range)),
             1 => Resources::Oxygen(rng.gen_range(range)),
             2 => Resources::Fuel(rng.gen_range(range)),
             _ => Resources::Fuel(rng.gen_range(range)),

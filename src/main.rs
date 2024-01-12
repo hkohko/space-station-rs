@@ -1,2 +1,5 @@
 use space_station::prelude::*;
-fn main() {}
+use space_station::experimentals::experimental_main;
+fn main() {
+    experimental_main();
+}

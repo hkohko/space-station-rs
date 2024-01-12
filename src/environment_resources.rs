@@ -1,15 +1,17 @@
 use crate::{Coordinates, Resources, TransferResources};
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 /// Struct for resources available in the environment.
 pub struct EnvResource {
     kind: Resources,
     coordinates: Coordinates,
+    id: i32,
 }
 impl EnvResource {
-    pub fn randomize(at_most: i32) -> EnvResource {
+    pub fn randomize(at_most: i32, id_num: i32) -> EnvResource {
         EnvResource {
             kind: Resources::randomize(at_most),
             coordinates: Coordinates::randomize(),
+            id: id_num,
         }
     }
     /// Returns the resource's kind.
@@ -19,6 +21,9 @@ impl EnvResource {
     /// Returns the resource's coordinates.
     pub fn get_coordinates(&self) -> Coordinates {
         self.coordinates
+    }
+    pub fn get_id(&self) -> i32 {
+        self.id
     }
 }
 impl TransferResources for EnvResource {
