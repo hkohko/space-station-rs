@@ -58,25 +58,25 @@ impl<'a> MotherShip<'a> {
 impl<'a> TransferResources for MotherShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
         if spc_current_level == 100 {
-            return false
+            return false;
         }
         match rsc {
             Resources::FoodWater(rate) => {
                 if let Resources::Oxygen(val) = self.resource.consumable {
                     self.resource.consumable = Resources::Oxygen(val - rate);
-                    return true
+                    return true;
                 }
             }
             Resources::Oxygen(rate) => {
                 if let Resources::Oxygen(val) = self.resource.oxygen {
                     self.resource.oxygen = Resources::Oxygen(val - rate);
-                    return true
+                    return true;
                 }
             }
             Resources::Fuel(rate) => {
                 if let Resources::Fuel(val) = self.resource.fuel {
                     self.resource.fuel = Resources::Fuel(val - rate);
-                    return true
+                    return true;
                 }
             }
         }
@@ -128,7 +128,7 @@ struct MotherShipResource {
     fuel: Resources,
 }
 impl MotherShipResource {
-    fn new(amount: i32) -> MotherShipResource{
+    fn new(amount: i32) -> MotherShipResource {
         MotherShipResource {
             consumable: Resources::Oxygen(amount),
             oxygen: Resources::Oxygen(amount),

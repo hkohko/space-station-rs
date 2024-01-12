@@ -1,4 +1,4 @@
-use crate::{Resources, Coordinates, TransferResources};
+use crate::{Coordinates, Resources, TransferResources};
 #[derive(Debug)]
 /// Struct for resources available in the environment.
 pub struct EnvResource {
@@ -7,7 +7,6 @@ pub struct EnvResource {
 }
 impl EnvResource {
     pub fn randomize(at_most: i32) -> EnvResource {
-
         EnvResource {
             kind: Resources::randomize(at_most),
             coordinates: Coordinates::randomize(),
@@ -36,7 +35,7 @@ impl TransferResources for EnvResource {
                 } else {
                     true
                 }
-            },
+            }
             Resources::Oxygen(val) => {
                 if let Resources::Oxygen(rate) = _rsc {
                     if val - rate != -1 {
@@ -48,7 +47,7 @@ impl TransferResources for EnvResource {
                 } else {
                     true
                 }
-            },
+            }
             Resources::Fuel(val) => {
                 if let Resources::Fuel(rate) = _rsc {
                     if val - rate != -1 {
@@ -60,7 +59,7 @@ impl TransferResources for EnvResource {
                 } else {
                     true
                 }
-            },
+            }
         }
     }
 }

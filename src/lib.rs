@@ -9,20 +9,22 @@
 
 use environment_resources::EnvResource;
 use rand::{self, Rng};
-/// Imports all necessary modules from this library for convenience.
-pub mod prelude;
-/// Structs, Enums, and methods for motherships.
-pub mod mother_ship;
-/// Structs, Enums, and methods for spaceships.
-pub mod space_ship;
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
+/// Structs, Enums, and methods for motherships.
+pub mod mother_ship;
+/// Imports all necessary modules from this library for convenience.
+pub mod prelude;
+/// Structs, Enums, and methods for spaceships.
+pub mod space_ship;
 /// Tests for space-station-rs library
 #[allow(unused_imports)]
 pub mod tests;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
-    fn get_levels(&self, _rsc: Resources) -> i32 {0}
+    fn get_levels(&self, _rsc: Resources) -> i32 {
+        0
+    }
 }
 pub trait GenericInfo {
     /// Displays a ship's general information.
@@ -46,8 +48,10 @@ pub trait TransferResources {
     /// let mut ada = MotherShip::new("Ada");
     /// ada.give_resources(Resources::FoodWater(1), 100);
     /// ```
-    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {true}
-    /// Receive resources to a ship. 
+    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {
+        true
+    }
+    /// Receive resources to a ship.
     /// - Requires a resource/another ship that is capable of transferring resources.
     /// ## Examples
     /// ```
@@ -61,16 +65,15 @@ pub trait TransferResources {
         T: TransferResources,
     {
     }
-    fn receive_to_storage(&mut self, _rsc: Resources) 
-    {
-        
-    }
+    fn receive_to_storage(&mut self, _rsc: Resources) {}
     /// Implementation WIP
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
 /// Shared trait for ships that can move.
 pub trait Move {
-    fn to_location(&mut self, _to: &Coordinates) -> bool {false}
+    fn to_location(&mut self, _to: &Coordinates) -> bool {
+        false
+    }
 }
 #[derive(Debug)]
 pub struct Storage {
@@ -83,10 +86,9 @@ impl Storage {
         Storage {
             consumable: Resources::FoodWater(amount),
             oxygen: Resources::Oxygen(amount),
-            fuel: Resources::Fuel(amount)
+            fuel: Resources::Fuel(amount),
         }
     }
-    
 }
 impl GetResourceLevels for Storage {
     fn get_levels(&self, rsc: Resources) -> i32 {
@@ -97,14 +99,14 @@ impl GetResourceLevels for Storage {
                 } else {
                     0
                 }
-            },
+            }
             Resources::Oxygen(_) => {
                 if let Resources::Oxygen(val) = self.oxygen {
                     val
                 } else {
                     0
                 }
-            },
+            }
             Resources::FoodWater(_) => {
                 if let Resources::Oxygen(val) = self.consumable {
                     val
@@ -122,10 +124,10 @@ impl LevelCap for Storage {
             match res {
                 Resources::FoodWater(val) => {
                     self.consumable = Resources::Oxygen(std::cmp::max(val, 0));
-                },
+                }
                 Resources::Oxygen(val) => {
                     self.oxygen = Resources::Oxygen(std::cmp::max(val, 0));
-                },
+                }
                 Resources::Fuel(val) => {
                     self.fuel = Resources::Fuel(std::cmp::max(val, 0));
                 }
@@ -199,10 +201,10 @@ impl LevelCap for Resources {
         match self {
             Self::FoodWater(val) => {
                 *val = std::cmp::max(*val, 0);
-            },
+            }
             Self::Oxygen(val) => {
                 *val = std::cmp::max(*val, 0);
-            },
+            }
             Self::Fuel(val) => {
                 *val = std::cmp::max(*val, 0);
             }
@@ -243,7 +245,7 @@ impl Coordinates {
             let (idx, val) = item;
             if val < -1000 || val > 1000 {
                 is_valid = false;
-                let axis = if idx == 0 {"x"} else {"y"};
+                let axis = if idx == 0 { "x" } else { "y" };
                 println!("{axis} value is out of bounds: {val}.")
             }
         }

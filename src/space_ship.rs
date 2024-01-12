@@ -109,7 +109,10 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     self.oxygen = Resources::Oxygen(spc_current_level - val);
                     true
                 } else {
-                    println!("Oxygen unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}", self.oxygen);
+                    println!(
+                        "Oxygen unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}",
+                        self.oxygen
+                    );
                     false
                 }
             }
@@ -118,7 +121,10 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     self.fuel = Resources::Fuel(spc_current_level - val);
                     true
                 } else {
-                    println!("Fuel unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}", self.fuel);
+                    println!(
+                        "Fuel unit to spend exceeds remaining.\nRemaining: {:?}\nNeeded: {val}",
+                        self.fuel
+                    );
                     false
                 }
             }
@@ -134,7 +140,8 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     Resources::FoodWater(val) => val,
                     _ => 0,
                 };
-                let still_available = source.give_resources(Resources::FoodWater(rate), initial_consumable_level);
+                let still_available =
+                    source.give_resources(Resources::FoodWater(rate), initial_consumable_level);
                 if still_available {
                     self.consumable = Resources::FoodWater(initial_consumable_level + rate);
                     self.consumable.adjust_max_level();
@@ -145,18 +152,20 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     Resources::Oxygen(val) => val,
                     _ => 0,
                 };
-                let still_available = source.give_resources(Resources::Oxygen(rate), initial_oxygen_level);
+                let still_available =
+                    source.give_resources(Resources::Oxygen(rate), initial_oxygen_level);
                 if still_available {
-                        self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
-                        self.oxygen.adjust_max_level()
-                    }
+                    self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
+                    self.oxygen.adjust_max_level()
+                }
             }
             Resources::Fuel(rate) => {
                 let initial_fuel_level = match self.fuel {
                     Resources::Fuel(val) => val,
                     _ => 0,
                 };
-                let still_available = source.give_resources(Resources::Fuel(rate), initial_fuel_level);
+                let still_available =
+                    source.give_resources(Resources::Fuel(rate), initial_fuel_level);
                 if still_available {
                     self.fuel = Resources::Fuel(initial_fuel_level + rate);
                     self.fuel.adjust_max_level();
@@ -193,29 +202,39 @@ impl<'a> TransferResources for SpaceShip<'a> {
         match _env_resource.get_kind() {
             Resources::FoodWater(val) => {
                 for _ in 0..=val {
-                    let still_available = _env_resource.give_resources(Resources::FoodWater(1), val);
-                    if still_available {self.receive_to_storage(Resources::FoodWater(1))}
+                    let still_available =
+                        _env_resource.give_resources(Resources::FoodWater(1), val);
+                    if still_available {
+                        self.receive_to_storage(Resources::FoodWater(1))
+                    }
                 }
-            },
+            }
             Resources::Oxygen(val) => {
                 for _ in 0..=val {
                     let still_available = _env_resource.give_resources(Resources::Oxygen(1), val);
-                    if still_available {self.receive_to_storage(Resources::Oxygen(1))}
+                    if still_available {
+                        self.receive_to_storage(Resources::Oxygen(1))
+                    }
                 }
-            },
+            }
             Resources::Fuel(val) => {
                 for _ in 0..=val {
                     let still_available = _env_resource.give_resources(Resources::Fuel(1), val);
-                    if still_available {self.receive_to_storage(Resources::Fuel(1))}
+                    if still_available {
+                        self.receive_to_storage(Resources::Fuel(1))
+                    }
                 }
-            },
+            }
         }
     }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
         let n = self.name;
-        println!("--{n}'s Information--\nCurrent location: ({},{})", self.location.0, self.location.1);
+        println!(
+            "--{n}'s Information--\nCurrent location: ({},{})",
+            self.location.0, self.location.1
+        );
     }
     fn display_resources(&self) {
         let n = self.name;
@@ -244,15 +263,16 @@ impl<'a> Move for SpaceShip<'a> {
                 Resources::Fuel(val) => val,
                 _ => 0,
             };
-            let enough_fuel = self.give_resources(Resources::Fuel(fuel_to_spend as i32), current_fuel);
+            let enough_fuel =
+                self.give_resources(Resources::Fuel(fuel_to_spend as i32), current_fuel);
             if enough_fuel {
                 self.location.0 = to.0;
                 self.location.1 = to.1;
                 println!("Moved to ({}, {})", to.0, to.1);
-                return true
+                return true;
             } else {
                 println!("Not enough fuel to move to ({}, {})", to.0, to.1);
-                return false
+                return false;
             }
         } else {
             false
@@ -268,14 +288,14 @@ impl<'a> GetResourceLevels for SpaceShip<'a> {
                 } else {
                     0
                 }
-            },
+            }
             Resources::Oxygen(_) => {
                 if let Resources::Oxygen(val) = self.oxygen {
                     val
                 } else {
                     0
                 }
-            },
+            }
             Resources::FoodWater(_) => {
                 if let Resources::FoodWater(val) = self.consumable {
                     val

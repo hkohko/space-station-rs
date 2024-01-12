@@ -62,7 +62,7 @@ fn recharge_features() {
 #[test]
 fn move_features() {
     let mut zeus = SpaceShip::new("Zeus");
-    let too_far_location = Coordinates::new(999,-999);
+    let too_far_location = Coordinates::new(999, -999);
     let good_location = Coordinates::new(100, 100);
     zeus.display_info();
     zeus.display_resources();
