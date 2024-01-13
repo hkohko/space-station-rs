@@ -22,6 +22,8 @@ pub mod space_ship;
 pub mod tests;
 /// Experiemental code to test ideas.
 pub mod experimentals;
+/// Set the world parameters.
+pub mod world;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
     fn get_levels(&self, _rsc: Resources) -> i32 {
