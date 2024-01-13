@@ -1,8 +1,16 @@
 use crate::prelude::*;
 pub fn experimental_main() {
-    let _ = resource_spawning_consuming_idea();
+    // let _ = resource_spawning_consuming_idea();
+    build_world();
 }
-
+fn build_world() {
+    let w = World::new(10,
+         100,
+        10,
+        1,
+        1);
+    dbg!(&w);
+}
 fn resource_spawning_consuming_idea() {
     let mut new_ship = SpaceShip::new("Zeus");
     // create a new list with x amount of items.

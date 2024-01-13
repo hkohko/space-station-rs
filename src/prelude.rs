@@ -1,6 +1,7 @@
 pub use crate::environment_resources::EnvResource;
 pub use crate::mother_ship::MotherShip;
 pub use crate::space_ship::SpaceShip;
+pub use crate::world::World;
 pub use crate::{
     Coordinates, GenericInfo, GetResourceLevels, LevelCap, MotherShipDockStatus,
     MotherShipRechargeStatus, Move, Quadrants, Resources, SpaceShipDockStatus, Storage,
