@@ -19,6 +19,7 @@ pub mod prelude;
 pub mod space_ship;
 /// Tests for space-station-rs library.
 #[allow(unused_imports)]
+#[cfg(test)]
 pub mod tests;
 /// Experiemental code to test ideas.
 pub mod experimentals;
@@ -51,7 +52,8 @@ pub trait TransferResources {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// let mut ada = MotherShip::new("Ada");
+    /// # let World = World::randomize();
+    /// let mut ada = MotherShip::new("Ada", &World);
     /// ada.give_resources(Resources::FoodWater(1), 100);
     /// ```
     fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {
@@ -62,8 +64,9 @@ pub trait TransferResources {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// let mut ada = MotherShip::new("Ada");
-    /// let mut zeus = SpaceShip::new("Zeus");
+    /// # let World = World::randomize();
+    /// let mut ada = MotherShip::new("Ada", &World);
+    /// let mut zeus = SpaceShip::new("Zeus", & World);
     /// zeus.receive_resources(Resources::FoodWater(20), &mut ada);
     /// ```
     fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)

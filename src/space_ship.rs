@@ -14,6 +14,7 @@ pub struct SpaceShip<'a> {
     storage: Storage,
     dock_status: SpaceShipDockStatus,
     location: Coordinates,
+    world_parameters: &'a World,
 }
 impl<'a> SpaceShip<'a> {
     fn docked(&mut self, mtr_shp: &mut MotherShip) {
@@ -62,18 +63,22 @@ impl<'a> SpaceShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// let mut zeus = SpaceShip::new("Zeus");
+    /// # let World = World::randomize();
+    /// let mut zeus = SpaceShip::new("Zeus", &World);
     /// ```
-    pub fn new(n: &'a str) -> SpaceShip<'a> {
+    pub fn new(n: &'a str, world: &'a World) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
+        let play_area = world.play_area;
+        let (min, max) = play_area.get_values();
         let s = SpaceShip {
             name: n,
             consumable: Resources::FoodWater(rng.gen_range(50..100)),
             oxygen: Resources::Oxygen(rng.gen_range(50..100)),
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
-            location: Coordinates(rng.gen_range(5..100), rng.gen_range(5..100)),
+            location: Coordinates(rng.gen_range(min..max), rng.gen_range(min..max)),
             storage: Storage::new(0),
+            world_parameters: world,
         };
         s
     }
@@ -82,11 +87,19 @@ impl<'a> SpaceShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// let mut ada = MotherShip::new("Ada");
-    /// let mut zeus = SpaceShip::new("Zeus");
-    /// zeus.recharge(&mut ada, 0);
+    /// # let World = World::randomize();
+    /// let mut ada = MotherShip::new("Ada", &World);
+    /// let mut zeus = SpaceShip::new("Zeus", &World);
+    /// zeus.recharge(&mut ada);
     /// ```
-    pub fn recharge(&mut self, mtr_shp: &mut MotherShip, recharge_ms: u64) {
+    pub fn recharge(&mut self, mtr_shp: &mut MotherShip) {
+        let recharge_ms = match u64::try_from(self.world_parameters.recharge_interval) {
+            Ok(val) => val,
+            Err(e) => {
+                println!("{e}");
+                0
+            }
+        };
         self.docked(mtr_shp);
         self.recharge_backend(mtr_shp, recharge_ms);
         self.undocked(mtr_shp);
@@ -134,38 +147,39 @@ impl<'a> TransferResources for SpaceShip<'a> {
     where
         T: TransferResources,
     {
+        let rate = self.world_parameters.recharge_rate;
         match rsc {
-            Resources::FoodWater(rate) => {
+            Resources::FoodWater(_) => {
                 let initial_consumable_level = match self.consumable {
                     Resources::FoodWater(val) => val,
                     _ => 0,
                 };
                 let still_available =
-                    source.give_resources(Resources::FoodWater(rate), initial_consumable_level);
+                    source.give_resources(Resources::FoodWater(0), initial_consumable_level);
                 if still_available {
                     self.consumable = Resources::FoodWater(initial_consumable_level + rate);
                     self.consumable.adjust_max_level();
                 }
             }
-            Resources::Oxygen(rate) => {
+            Resources::Oxygen(_) => {
                 let initial_oxygen_level = match self.oxygen {
                     Resources::Oxygen(val) => val,
                     _ => 0,
                 };
                 let still_available =
-                    source.give_resources(Resources::Oxygen(rate), initial_oxygen_level);
+                    source.give_resources(Resources::Oxygen(0), initial_oxygen_level);
                 if still_available {
                     self.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
                     self.oxygen.adjust_max_level()
                 }
             }
-            Resources::Fuel(rate) => {
+            Resources::Fuel(_) => {
                 let initial_fuel_level = match self.fuel {
                     Resources::Fuel(val) => val,
                     _ => 0,
                 };
                 let still_available =
-                    source.give_resources(Resources::Fuel(rate), initial_fuel_level);
+                    source.give_resources(Resources::Fuel(0), initial_fuel_level);
                 if still_available {
                     self.fuel = Resources::Fuel(initial_fuel_level + rate);
                     self.fuel.adjust_max_level();
@@ -174,22 +188,23 @@ impl<'a> TransferResources for SpaceShip<'a> {
         }
     }
     fn receive_to_storage(&mut self, _rsc: Resources) {
+        let rate = self.world_parameters.recharge_rate;
         match _rsc {
-            Resources::FoodWater(rate) => {
+            Resources::FoodWater(_) => {
                 let initial_consumable_level = match self.storage.consumable {
                     Resources::FoodWater(val) => val,
                     _ => 0,
                 };
                 self.storage.consumable = Resources::FoodWater(initial_consumable_level + rate);
             }
-            Resources::Oxygen(rate) => {
+            Resources::Oxygen(_) => {
                 let initial_oxygen_level = match self.storage.oxygen {
                     Resources::Oxygen(val) => val,
                     _ => 0,
                 };
                 self.storage.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
             }
-            Resources::Fuel(rate) => {
+            Resources::Fuel(_) => {
                 let initial_fuel_level = match self.storage.fuel {
                     Resources::Fuel(val) => val,
                     _ => 0,

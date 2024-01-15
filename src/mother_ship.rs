@@ -9,6 +9,7 @@ pub struct MotherShip<'a> {
     recharge: MotherShipRechargeStatus,
     location: Coordinates,
     storage: Storage,
+    world_parameters: &'a World,
 }
 impl<'a> MotherShip<'a> {
     /// ## Creates a new mothership
@@ -18,10 +19,12 @@ impl<'a> MotherShip<'a> {
     /// - ...have its recharge status be MotherShipRechargeStatus::Idle.
     /// ## Examples
     /// ```
+    /// # use space_station::prelude::*;
     /// # use space_station::mother_ship::MotherShip;
-    /// let mut ada = MotherShip::new("Ada");
+    /// # let World = World::randomize();
+    /// let mut ada = MotherShip::new("Ada", &World);
     /// ```
-    pub fn new(n: &'a str) -> MotherShip<'a> {
+    pub fn new(n: &'a str, world: &'a World) -> MotherShip<'a> {
         MotherShip {
             name: n,
             resource: MotherShipResource::new(500),
@@ -29,6 +32,7 @@ impl<'a> MotherShip<'a> {
             recharge: MotherShipRechargeStatus::Idle,
             location: Coordinates(0, 0),
             storage: Storage::new(100),
+            world_parameters: world,
         }
     }
 
@@ -36,7 +40,8 @@ impl<'a> MotherShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// let mut ada = MotherShip::new("Ada");
+    /// # let World = World::randomize();
+    /// let mut ada = MotherShip::new("Ada", &World);
     /// // Change ship's status to Populated.
     /// ada.change_status(Some(MotherShipDockStatus::Populated), None);
     /// ```
@@ -57,23 +62,24 @@ impl<'a> MotherShip<'a> {
 }
 impl<'a> TransferResources for MotherShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
+        let rate = self.world_parameters.consumption_rate;
         if spc_current_level == 100 {
             return false;
         }
         match rsc {
-            Resources::FoodWater(rate) => {
+            Resources::FoodWater(_) => {
                 if let Resources::Oxygen(val) = self.resource.consumable {
                     self.resource.consumable = Resources::Oxygen(val - rate);
                     return true;
                 }
             }
-            Resources::Oxygen(rate) => {
+            Resources::Oxygen(_) => {
                 if let Resources::Oxygen(val) = self.resource.oxygen {
                     self.resource.oxygen = Resources::Oxygen(val - rate);
                     return true;
                 }
             }
-            Resources::Fuel(rate) => {
+            Resources::Fuel(_) => {
                 if let Resources::Fuel(val) = self.resource.fuel {
                     self.resource.fuel = Resources::Fuel(val - rate);
                     return true;

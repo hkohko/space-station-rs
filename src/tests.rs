@@ -1,7 +1,8 @@
 use crate::prelude::*;
 #[test]
 fn transfer_storage() {
-    let mut new_ship = SpaceShip::new("Zeus");
+    let new_world = World::randomize();
+    let mut new_ship = SpaceShip::new("Zeus", &new_world);
     let mut new_env_resources = EnvResource::randomize(50, 0);
     let mut env_resources2 = EnvResource::randomize(100, 1);
     dbg!(&new_ship);
@@ -46,10 +47,11 @@ fn randomize_stuff() {
 }
 #[test]
 fn recharge_features() {
-    let mut zeus = SpaceShip::new("Zeus");
-    let mut ada = MotherShip::new("Ada");
+    let new_world = World::randomize();
+    let mut zeus = SpaceShip::new("Zeus", &new_world);
+    let mut ada = MotherShip::new("Ada", &new_world);
     ada.display_resources();
-    zeus.recharge(&mut ada, 0);
+    zeus.recharge(&mut ada);
     let after_consumables = zeus.get_levels(Resources::Fuel(0));
     let after_oxygen = zeus.get_levels(Resources::Oxygen(0));
     let after_fuel = zeus.get_levels(Resources::Fuel(0));
@@ -63,7 +65,8 @@ fn recharge_features() {
 }
 #[test]
 fn move_features() {
-    let mut zeus = SpaceShip::new("Zeus");
+    let new_world = World::randomize();
+    let mut zeus = SpaceShip::new("Zeus", &new_world);
     let too_far_location = Coordinates::new(999, -999);
     let good_location = Coordinates::new(100, 100);
     zeus.display_info();

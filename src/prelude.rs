@@ -5,5 +5,5 @@ pub use crate::world::World;
 pub use crate::{
     Coordinates, GenericInfo, GetResourceLevels, LevelCap, MotherShipDockStatus,
     MotherShipRechargeStatus, Move, Quadrants, Resources, SpaceShipDockStatus, Storage,
-    TransferResources,
+    TransferResources, 
 };

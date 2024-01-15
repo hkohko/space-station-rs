@@ -4,15 +4,19 @@ pub fn experimental_main() {
     build_world();
 }
 fn build_world() {
-    let w = World::new(10,
-         100,
-        10,
+    let w = World::new(100,
+         10,
+        100,
         1,
-        1);
+        1,
+        1,
+        100
+    );
     dbg!(&w);
 }
 fn resource_spawning_consuming_idea() {
-    let mut new_ship = SpaceShip::new("Zeus");
+    let new_world = World::randomize();
+    let mut new_ship = SpaceShip::new("Zeus", &new_world);
     // create a new list with x amount of items.
     let mut v_env_rsc = Vec::with_capacity(10);
     // spawn randomized resources with a for loop and put them in a vector
