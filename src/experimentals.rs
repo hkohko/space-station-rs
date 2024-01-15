@@ -4,14 +4,7 @@ pub fn experimental_main() {
     build_world();
 }
 fn build_world() {
-    let w = World::new(100,
-         10,
-        100,
-        1,
-        1,
-        1,
-        100
-    );
+    let w = World::new(100, 10, 100, 1, 1, 1, 100);
     dbg!(&w);
 }
 fn resource_spawning_consuming_idea() {
@@ -26,7 +19,7 @@ fn resource_spawning_consuming_idea() {
     }
     dbg!(&v_env_rsc);
     dbg!(&new_ship);
-    
+
     for env in v_env_rsc.clone().into_iter() {
         // iterate through clone of the vec, and consume it,
         // while making each product of the for loop mutable.
@@ -40,7 +33,7 @@ fn resource_spawning_consuming_idea() {
             Err(e) => {
                 println!("{e}");
                 0usize
-            } 
+            }
         };
         v_env_rsc[indexer] = new_v;
     }

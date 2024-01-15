@@ -178,8 +178,7 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     Resources::Fuel(val) => val,
                     _ => 0,
                 };
-                let still_available =
-                    source.give_resources(Resources::Fuel(0), initial_fuel_level);
+                let still_available = source.give_resources(Resources::Fuel(0), initial_fuel_level);
                 if still_available {
                     self.fuel = Resources::Fuel(initial_fuel_level + rate);
                     self.fuel.adjust_max_level();
@@ -272,7 +271,11 @@ impl<'a> Move for SpaceShip<'a> {
     fn to_location(&mut self, to: &Coordinates) -> bool {
         let within_bounds = to.max_bounds();
         if within_bounds {
-            let dist = to.get_distance(Coordinates::new(self.location.x, self.location.y, self.world_parameters.play_area));
+            let dist = to.get_distance(Coordinates::new(
+                self.location.x,
+                self.location.y,
+                self.world_parameters.play_area,
+            ));
             let fuel_to_spend = (dist * 0.2).floor();
             let current_fuel = match self.fuel {
                 Resources::Fuel(val) => val,

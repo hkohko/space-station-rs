@@ -31,7 +31,7 @@ impl<'a> MotherShip<'a> {
             resource: MotherShipResource::new(500),
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
-            location: Coordinates::new(0,0, area),
+            location: Coordinates::new(0, 0, area),
             storage: Storage::new(100),
             world_parameters: world,
         }

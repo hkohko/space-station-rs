@@ -12,6 +12,8 @@ use prelude::WorldSize;
 use rand::{self, Rng};
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
+/// Experiemental code to test ideas.
+pub mod experimentals;
 /// Structs, Enums, and methods for motherships.
 pub mod mother_ship;
 /// Imports all necessary modules from this library for convenience.
@@ -22,8 +24,6 @@ pub mod space_ship;
 #[allow(unused_imports)]
 #[cfg(test)]
 pub mod tests;
-/// Experiemental code to test ideas.
-pub mod experimentals;
 /// Set the world parameters.
 pub mod world;
 /// Shared trait for generic information of a ship.
@@ -237,10 +237,10 @@ pub enum Quadrants {
 pub struct Location();
 /// Coordinates of an object in the game.
 #[derive(Debug, Clone, Copy)]
-pub struct Coordinates{
+pub struct Coordinates {
     x: i32,
     y: i32,
-    world_size: WorldSize
+    world_size: WorldSize,
 }
 impl Coordinates {
     /// Creates a new coordinate.
@@ -258,13 +258,12 @@ impl Coordinates {
         Coordinates {
             x: rng.gen_range(-max..max),
             y: rng.gen_range(-max..max),
-            world_size: w_size
-
+            world_size: w_size,
         }
     }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
-        let (min , max) = self.world_size.get_values();
+        let (min, max) = self.world_size.get_values();
         let values = [self.x, self.y];
         for item in values.into_iter().enumerate() {
             let (idx, val) = item;

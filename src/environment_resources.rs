@@ -25,7 +25,11 @@ impl EnvResource {
     pub fn get_id(&self) -> i32 {
         self.id
     }
-    pub fn randomize_resources(amount: usize, at_most: i32, play_area: WorldSize) -> Vec<EnvResource>{
+    pub fn randomize_resources(
+        amount: usize,
+        at_most: i32,
+        play_area: WorldSize,
+    ) -> Vec<EnvResource> {
         let mut rsc_vec = Vec::with_capacity(amount);
         let convert_amount_to_i32 = i32::try_from(amount);
         let amount_as_i32 = match convert_amount_to_i32 {
