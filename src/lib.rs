@@ -53,7 +53,7 @@ pub trait TransferResources {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// ada.give_resources(Resources::FoodWater(1), 100);
     /// ```
@@ -65,7 +65,7 @@ pub trait TransferResources {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// let mut zeus = SpaceShip::new("Zeus", & World);
     /// zeus.receive_resources(Resources::FoodWater(20), &mut ada);

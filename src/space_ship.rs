@@ -63,7 +63,7 @@ impl<'a> SpaceShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut zeus = SpaceShip::new("Zeus", &World);
     /// ```
     pub fn new(n: &'a str, world: &'a World) -> SpaceShip<'a> {
@@ -87,7 +87,7 @@ impl<'a> SpaceShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// let mut zeus = SpaceShip::new("Zeus", &World);
     /// zeus.recharge(&mut ada);

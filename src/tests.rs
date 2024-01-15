@@ -97,7 +97,7 @@ fn recharge_features() {
 }
 #[test]
 fn move_features() {
-    let play_area = 500;
+    let play_area = 120;
     let new_world = World::randomize(WorldSize::new(play_area));
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let too_far_location = Coordinates::new(2 * play_area, -2 * play_area, new_world.play_area);

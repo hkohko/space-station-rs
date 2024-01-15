@@ -21,7 +21,7 @@ impl<'a> MotherShip<'a> {
     /// ```
     /// # use space_station::prelude::*;
     /// # use space_station::mother_ship::MotherShip;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// ```
     pub fn new(n: &'a str, world: &'a World) -> MotherShip<'a> {
@@ -41,7 +41,7 @@ impl<'a> MotherShip<'a> {
     /// ## Examples
     /// ```
     /// # use space_station::prelude::*;
-    /// # let World = World::randomize();
+    /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// // Change ship's status to Populated.
     /// ada.change_status(Some(MotherShipDockStatus::Populated), None);
