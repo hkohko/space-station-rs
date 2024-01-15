@@ -268,7 +268,7 @@ impl<'a> GenericInfo for SpaceShip<'a> {
     }
 }
 impl<'a> Move for SpaceShip<'a> {
-    fn to_location(&mut self, to: &Coordinates) -> bool {
+    fn to_location(&mut self, to: Coordinates) -> bool {
         let within_bounds = to.max_bounds();
         if within_bounds {
             let dist = to.get_distance(Coordinates::new(

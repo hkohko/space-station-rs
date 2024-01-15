@@ -1,17 +1,39 @@
+use std::collections::btree_map::Values;
+
 use crate::prelude::*;
 #[test]
 fn transfer_storage() {
     let play_area: i32 = 1000;
     let new_world = World::randomize(WorldSize::new(play_area));
     let mut new_ship = SpaceShip::new("Zeus", &new_world);
-    let mut new_env_resources = EnvResource::randomize(50, 0, new_world.play_area);
-    let mut env_resources2 = EnvResource::randomize(100, 1, new_world.play_area);
+    let mut env_1 = EnvResource::randomize(50, 0, new_world.play_area);
+    let mut env_2 = EnvResource::randomize(100, 1, new_world.play_area);
     dbg!(&new_ship);
-    dbg!(&new_env_resources.get_kind());
-    new_ship.get_env_resources(&mut new_env_resources);
-    new_ship.get_env_resources(&mut env_resources2);
+    let starting_env_1 = match env_1.get_kind() {
+        Resources::FoodWater(val) => val,
+        Resources::Fuel(val) => val,
+        Resources::Oxygen(val) => val,
+    };
+    let starting_env_2 = match env_2.get_kind() {
+        Resources::FoodWater(val) => val,
+        Resources::Fuel(val) => val,
+        Resources::Oxygen(val) => val,
+    };
+    new_ship.get_env_resources(&mut env_1);
+    new_ship.get_env_resources(&mut env_2);
     dbg!(&new_ship);
-    dbg!(&new_env_resources.get_kind());
+    let end_val_1 = match env_1.get_kind() {
+        Resources::FoodWater(val) => val,
+        Resources::Fuel(val) => val,
+        Resources::Oxygen(val) => val,
+    };
+    let end_val_2 = match env_2.get_kind() {
+        Resources::FoodWater(val) => val,
+        Resources::Fuel(val) => val,
+        Resources::Oxygen(val) => val,
+    };
+    assert_eq!(end_val_1 - starting_env_1, -starting_env_1);
+    assert_eq!(end_val_2 - starting_env_2, -starting_env_2)
 }
 #[test]
 fn storage_negative() {
@@ -50,7 +72,14 @@ fn randomize_stuff() {
 }
 #[test]
 fn recharge_features() {
-    let new_world = World::randomize(WorldSize::new(1000));
+    let new_world = World::new(
+        1000,
+        500,
+        100,
+        1,
+        1,
+        1,
+        0);
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let mut ada = MotherShip::new("Ada", &new_world);
     ada.display_resources();
@@ -68,18 +97,20 @@ fn recharge_features() {
 }
 #[test]
 fn move_features() {
-    let play_area = 1000;
+    let play_area = 500;
     let new_world = World::randomize(WorldSize::new(play_area));
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let too_far_location = Coordinates::new(2 * play_area, -2 * play_area, new_world.play_area);
-    let good_location = Coordinates::new(play_area / 2, play_area - 500, new_world.play_area);
-    let (min, max) = new_world.play_area.get_values();
+    let good_location = Coordinates::new(play_area / 2, play_area / 2, new_world.play_area);
     zeus.display_info();
     zeus.display_resources();
-    let must_fail = zeus.to_location(&too_far_location);
-    let must_pass = zeus.to_location(&good_location);
+    // take fuel reserves into account if this particular test fail
+    // max distance = 100(1 + 0.2) <- 0.2x multiplier can be modified in space_ship.rs
+    // impl Move <- here
+    let must_fail = zeus.to_location(too_far_location);
+    let must_pass = zeus.to_location(good_location);
     zeus.display_info();
     zeus.display_resources();
     assert_ne!(must_fail, true);
-    assert_eq!(must_pass, true)
+    assert_eq!(must_pass, true);
 }

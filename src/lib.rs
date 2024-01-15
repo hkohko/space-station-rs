@@ -81,7 +81,7 @@ pub trait TransferResources {
 }
 /// Shared trait for ships that can move.
 pub trait Move {
-    fn to_location(&mut self, _to: &Coordinates) -> bool {
+    fn to_location(&mut self, _to: Coordinates) -> bool {
         false
     }
 }
@@ -256,8 +256,8 @@ impl Coordinates {
         let mut rng = rand::thread_rng();
         let (min, max) = w_size.get_values();
         Coordinates {
-            x: rng.gen_range(-max..max),
-            y: rng.gen_range(-max..max),
+            x: rng.gen_range(min..max),
+            y: rng.gen_range(min..max),
             world_size: w_size,
         }
     }
