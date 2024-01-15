@@ -8,6 +8,7 @@
 //!
 
 use environment_resources::EnvResource;
+use prelude::WorldSize;
 use rand::{self, Rng};
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
@@ -236,23 +237,38 @@ pub enum Quadrants {
 pub struct Location();
 /// Coordinates of an object in the game.
 #[derive(Debug, Clone, Copy)]
-pub struct Coordinates(i32, i32);
+pub struct Coordinates{
+    x: i32,
+    y: i32,
+    world_size: WorldSize
+}
 impl Coordinates {
     /// Creates a new coordinate.
-    pub fn new(x: i32, y: i32) -> Self {
-        Coordinates(x, y)
+    pub fn new(get_x: i32, get_y: i32, w_size: WorldSize) -> Self {
+        Coordinates {
+            x: get_x,
+            y: get_y,
+            world_size: w_size,
+        }
     }
     /// Randomly generates a coordinate, within bounds of the playable game area (WIP)
-    pub fn randomize() -> Coordinates {
+    pub fn randomize(w_size: WorldSize) -> Coordinates {
         let mut rng = rand::thread_rng();
-        Coordinates::new(rng.gen_range(-999..1000), rng.gen_range(-999..1000))
+        let (min, max) = w_size.get_values();
+        Coordinates {
+            x: rng.gen_range(-max..max),
+            y: rng.gen_range(-max..max),
+            world_size: w_size
+
+        }
     }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
-        let values = [self.0, self.1];
+        let (min , max) = self.world_size.get_values();
+        let values = [self.x, self.y];
         for item in values.into_iter().enumerate() {
             let (idx, val) = item;
-            if val < -1000 || val > 1000 {
+            if val < min || val > max {
                 is_valid = false;
                 let axis = if idx == 0 { "x" } else { "y" };
                 println!("{axis} value is out of bounds: {val}.")
@@ -261,19 +277,19 @@ impl Coordinates {
         is_valid
     }
     fn get_quadrants(&self) -> Quadrants {
-        if self.0.is_positive() && self.1.is_positive() {
+        if self.x.is_positive() && self.y.is_positive() {
             Quadrants::First
-        } else if self.0.is_negative() && self.1.is_positive() {
+        } else if self.x.is_negative() && self.y.is_positive() {
             Quadrants::Second
-        } else if self.0.is_negative() && self.1.is_negative() {
+        } else if self.x.is_negative() && self.y.is_negative() {
             Quadrants::Third
         } else {
             Quadrants::Fourth
         }
     }
     fn get_distance(&self, from: Coordinates) -> f64 {
-        let side_a = from.0 - self.0;
-        let side_b = from.1 - self.1;
+        let side_a = from.x - self.x;
+        let side_b = from.y - self.y;
         let dest = f64::from(side_a.pow(2) + side_b.pow(2));
         let sqrt = dest.sqrt().floor();
         sqrt

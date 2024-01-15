@@ -1,4 +1,4 @@
-use crate::{Coordinates, Resources, TransferResources};
+use crate::prelude::*;
 #[derive(Debug, Clone, Copy)]
 /// Struct for resources available in the environment.
 pub struct EnvResource {
@@ -7,10 +7,10 @@ pub struct EnvResource {
     id: i32,
 }
 impl EnvResource {
-    pub fn randomize(at_most: i32, id_num: i32) -> EnvResource {
+    pub fn randomize(at_most: i32, id_num: i32, play_area: WorldSize) -> EnvResource {
         EnvResource {
             kind: Resources::randomize(at_most),
-            coordinates: Coordinates::randomize(),
+            coordinates: Coordinates::randomize(play_area),
             id: id_num,
         }
     }
@@ -24,6 +24,21 @@ impl EnvResource {
     }
     pub fn get_id(&self) -> i32 {
         self.id
+    }
+    pub fn randomize_resources(amount: usize, at_most: i32, play_area: WorldSize) -> Vec<EnvResource>{
+        let mut rsc_vec = Vec::with_capacity(amount);
+        let convert_amount_to_i32 = i32::try_from(amount);
+        let amount_as_i32 = match convert_amount_to_i32 {
+            Ok(val) => val,
+            Err(e) => {
+                println!("Error converting world resource amount to i32\n\n{e}");
+                0
+            }
+        };
+        for num in 0..=amount_as_i32 {
+            rsc_vec.push(EnvResource::randomize(at_most, num, play_area))
+        }
+        rsc_vec
     }
 }
 impl TransferResources for EnvResource {

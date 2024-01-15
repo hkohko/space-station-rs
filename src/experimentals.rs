@@ -15,13 +15,13 @@ fn build_world() {
     dbg!(&w);
 }
 fn resource_spawning_consuming_idea() {
-    let new_world = World::randomize();
+    let new_world = World::randomize(WorldSize::new(1000));
     let mut new_ship = SpaceShip::new("Zeus", &new_world);
     // create a new list with x amount of items.
     let mut v_env_rsc = Vec::with_capacity(10);
     // spawn randomized resources with a for loop and put them in a vector
     for a in 0..10 {
-        let new_env = EnvResource::randomize(50, a);
+        let new_env = EnvResource::randomize(50, a, WorldSize::new(100));
         v_env_rsc.push(new_env);
     }
     dbg!(&v_env_rsc);

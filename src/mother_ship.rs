@@ -25,12 +25,13 @@ impl<'a> MotherShip<'a> {
     /// let mut ada = MotherShip::new("Ada", &World);
     /// ```
     pub fn new(n: &'a str, world: &'a World) -> MotherShip<'a> {
+        let area = world.play_area;
         MotherShip {
             name: n,
             resource: MotherShipResource::new(500),
             dock: MotherShipDockStatus::Empty,
             recharge: MotherShipRechargeStatus::Idle,
-            location: Coordinates(0, 0),
+            location: Coordinates::new(0,0, area),
             storage: Storage::new(100),
             world_parameters: world,
         }

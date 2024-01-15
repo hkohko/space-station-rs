@@ -1,10 +1,11 @@
 use crate::prelude::*;
 #[test]
 fn transfer_storage() {
-    let new_world = World::randomize();
+    let play_area: i32 = 1000;
+    let new_world = World::randomize(WorldSize::new(play_area));
     let mut new_ship = SpaceShip::new("Zeus", &new_world);
-    let mut new_env_resources = EnvResource::randomize(50, 0);
-    let mut env_resources2 = EnvResource::randomize(100, 1);
+    let mut new_env_resources = EnvResource::randomize(50, 0, new_world.play_area);
+    let mut env_resources2 = EnvResource::randomize(100, 1, new_world.play_area);
     dbg!(&new_ship);
     dbg!(&new_env_resources.get_kind());
     new_ship.get_env_resources(&mut new_env_resources);
@@ -36,18 +37,20 @@ fn storage_positive() {
 }
 #[test]
 fn randomize_stuff() {
-    let new_coord = Coordinates::randomize();
+    let play_area: i32 = 1000;
+    let w_size = WorldSize::new(play_area);
+    let new_coord = Coordinates::randomize(w_size);
     dbg!(&new_coord);
     let new_resources = Resources::randomize(50);
     dbg!(&new_resources);
-    let new_env_resource = EnvResource::randomize(50, 3);
+    let new_env_resource = EnvResource::randomize(50, 3, w_size);
     dbg!(&new_env_resource.get_kind());
     dbg!(&new_env_resource.get_coordinates());
     dbg!(&new_env_resource);
 }
 #[test]
 fn recharge_features() {
-    let new_world = World::randomize();
+    let new_world = World::randomize(WorldSize::new(1000));
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let mut ada = MotherShip::new("Ada", &new_world);
     ada.display_resources();
@@ -65,10 +68,12 @@ fn recharge_features() {
 }
 #[test]
 fn move_features() {
-    let new_world = World::randomize();
+    let play_area = 1000;
+    let new_world = World::randomize(WorldSize::new(play_area));
     let mut zeus = SpaceShip::new("Zeus", &new_world);
-    let too_far_location = Coordinates::new(999, -999);
-    let good_location = Coordinates::new(100, 100);
+    let too_far_location = Coordinates::new(2 * play_area, -2 * play_area , new_world.play_area);
+    let good_location = Coordinates::new(play_area / 2, play_area - 500, new_world.play_area);
+    let (min, max) = new_world.play_area.get_values();
     zeus.display_info();
     zeus.display_resources();
     let must_fail = zeus.to_location(&too_far_location);

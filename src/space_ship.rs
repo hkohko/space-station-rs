@@ -69,14 +69,14 @@ impl<'a> SpaceShip<'a> {
     pub fn new(n: &'a str, world: &'a World) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
         let play_area = world.play_area;
-        let (min, max) = play_area.get_values();
+        let (_, max) = play_area.get_values();
         let s = SpaceShip {
             name: n,
             consumable: Resources::FoodWater(rng.gen_range(50..100)),
             oxygen: Resources::Oxygen(rng.gen_range(50..100)),
             fuel: Resources::Fuel(rng.gen_range(50..100)),
             dock_status: SpaceShipDockStatus::Undocked,
-            location: Coordinates(rng.gen_range(min..max), rng.gen_range(min..max)),
+            location: Coordinates::randomize(world.play_area),
             storage: Storage::new(0),
             world_parameters: world,
         };
@@ -248,7 +248,7 @@ impl<'a> GenericInfo for SpaceShip<'a> {
         let n = self.name;
         println!(
             "--{n}'s Information--\nCurrent location: ({},{})",
-            self.location.0, self.location.1
+            self.location.x, self.location.y
         );
     }
     fn display_resources(&self) {
@@ -272,7 +272,7 @@ impl<'a> Move for SpaceShip<'a> {
     fn to_location(&mut self, to: &Coordinates) -> bool {
         let within_bounds = to.max_bounds();
         if within_bounds {
-            let dist = to.get_distance(Coordinates::new(self.location.0, self.location.1));
+            let dist = to.get_distance(Coordinates::new(self.location.x, self.location.y, self.world_parameters.play_area));
             let fuel_to_spend = (dist * 0.2).floor();
             let current_fuel = match self.fuel {
                 Resources::Fuel(val) => val,
@@ -281,12 +281,12 @@ impl<'a> Move for SpaceShip<'a> {
             let enough_fuel =
                 self.give_resources(Resources::Fuel(fuel_to_spend as i32), current_fuel);
             if enough_fuel {
-                self.location.0 = to.0;
-                self.location.1 = to.1;
-                println!("Moved to ({}, {})", to.0, to.1);
+                self.location.x = to.x;
+                self.location.y = to.y;
+                println!("Moved to ({}, {})", to.x, to.y);
                 return true;
             } else {
-                println!("Not enough fuel to move to ({}, {})", to.0, to.1);
+                println!("Not enough fuel to move to ({}, {})", to.x, to.y);
                 return false;
             }
         } else {
