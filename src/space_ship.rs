@@ -68,8 +68,6 @@ impl<'a> SpaceShip<'a> {
     /// ```
     pub fn new(n: &'a str, world: &'a World) -> SpaceShip<'a> {
         let mut rng = rand::thread_rng();
-        let play_area = world.play_area;
-        let (_, max) = play_area.get_values();
         let s = SpaceShip {
             name: n,
             consumable: Resources::FoodWater(rng.gen_range(50..100)),
@@ -298,7 +296,7 @@ impl<'a> Move for SpaceShip<'a> {
     }
 }
 impl<'a> GetResourceLevels for SpaceShip<'a> {
-    fn get_levels(&self, rsc: Resources) -> i32 {
+    fn get_resource_amount(&self, rsc: Resources) -> i32 {
         match rsc {
             Resources::Fuel(_) => {
                 if let Resources::Fuel(val) = self.fuel {

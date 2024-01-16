@@ -39,9 +39,9 @@ fn transfer_storage() {
 fn storage_negative() {
     let mut new_stg = Storage::new(-10);
     new_stg.adjust_min_level();
-    let consumables = new_stg.get_levels(Resources::FoodWater(0));
-    let oxygen = new_stg.get_levels(Resources::Oxygen(0));
-    let fuel = new_stg.get_levels(Resources::Fuel(0));
+    let consumables = new_stg.get_resource_amount(Resources::FoodWater(0));
+    let oxygen = new_stg.get_resource_amount(Resources::Oxygen(0));
+    let fuel = new_stg.get_resource_amount(Resources::Fuel(0));
     assert_eq!(consumables, 0);
     assert_eq!(oxygen, 0);
     assert_eq!(fuel, 0);
@@ -50,9 +50,9 @@ fn storage_negative() {
 fn storage_positive() {
     let mut new_stg = Storage::new(100);
     new_stg.adjust_min_level();
-    let consumables = new_stg.get_levels(Resources::FoodWater(0));
-    let oxygen = new_stg.get_levels(Resources::Oxygen(0));
-    let fuel = new_stg.get_levels(Resources::Fuel(0));
+    let consumables = new_stg.get_resource_amount(Resources::FoodWater(0));
+    let oxygen = new_stg.get_resource_amount(Resources::Oxygen(0));
+    let fuel = new_stg.get_resource_amount(Resources::Fuel(0));
     assert_eq!(consumables, 100);
     assert_eq!(oxygen, 100);
     assert_eq!(fuel, 100);
@@ -72,21 +72,14 @@ fn randomize_stuff() {
 }
 #[test]
 fn recharge_features() {
-    let new_world = World::new(
-        1000,
-        500,
-        100,
-        1,
-        1,
-        1,
-        0);
+    let new_world = World::new(1000, 500, 100, 1, 1, 1, 0);
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let mut ada = MotherShip::new("Ada", &new_world);
     ada.display_resources();
     zeus.recharge(&mut ada);
-    let after_consumables = zeus.get_levels(Resources::Fuel(0));
-    let after_oxygen = zeus.get_levels(Resources::Oxygen(0));
-    let after_fuel = zeus.get_levels(Resources::Fuel(0));
+    let after_consumables = zeus.get_resource_amount(Resources::Fuel(0));
+    let after_oxygen = zeus.get_resource_amount(Resources::Oxygen(0));
+    let after_fuel = zeus.get_resource_amount(Resources::Fuel(0));
     ada.display_resources();
     let diff_consumables = 100 - after_consumables;
     let diff_oxygen = 100 - after_oxygen;

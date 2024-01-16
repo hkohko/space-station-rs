@@ -28,10 +28,12 @@ pub mod tests;
 pub mod world;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
-    fn get_levels(&self, _rsc: Resources) -> i32 {
+    /// Returns the amount of resources available in a resource object.
+    fn get_resource_amount(&self, _rsc: Resources) -> i32 {
         0
     }
 }
+/// Displays information of an object.
 pub trait GenericInfo {
     /// Displays a ship's general information.
     fn display_info(&self) {}
@@ -75,16 +77,19 @@ pub trait TransferResources {
         T: TransferResources,
     {
     }
+    /// Store environment resources inside the resource storage of a ship.
     fn receive_to_storage(&mut self, _rsc: Resources) {}
     /// Implementation WIP
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
 /// Shared trait for ships that can move.
 pub trait Move {
+    /// Move a ship to a location, taking into account its fuel levels and distance.
     fn to_location(&mut self, _to: Coordinates) -> bool {
         false
     }
 }
+/// Struct for storage, a way for ships to store resources mined from the environment.
 #[derive(Debug)]
 pub struct Storage {
     consumable: Resources,
@@ -92,6 +97,7 @@ pub struct Storage {
     fuel: Resources,
 }
 impl Storage {
+    /// Creates a new Storage with customized starting values.
     pub fn new(amount: i32) -> Storage {
         Storage {
             consumable: Resources::FoodWater(amount),
@@ -101,7 +107,7 @@ impl Storage {
     }
 }
 impl GetResourceLevels for Storage {
-    fn get_levels(&self, rsc: Resources) -> i32 {
+    fn get_resource_amount(&self, rsc: Resources) -> i32 {
         match rsc {
             Resources::Fuel(_) => {
                 if let Resources::Fuel(val) = self.fuel {

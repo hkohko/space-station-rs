@@ -1,15 +1,23 @@
 use crate::prelude::*;
 use rand::{self, Rng};
 #[derive(Debug)]
+/// Struct for a World. Every game must have a world.
 pub struct World {
+    /// Resources inside a world.
     pub spawned_resources: Vec<EnvResource>,
+    /// Set consumption rate of ships.
     pub consumption_rate: i32,
+    /// Set how fast a recharge should go.
     pub recharge_interval: i32,
+    /// Set how much a game object is recharge per unit of time.
     pub recharge_rate: i32,
+    /// Global game ticks.
     pub game_tick: u8,
+    /// Set the play area of the World.
     pub play_area: WorldSize,
 }
 impl World {
+    /// Creates a new world.
     pub fn new(
         play_area: i32,
         spawn_amount_of_resources: usize,
@@ -22,7 +30,7 @@ impl World {
         let area = WorldSize::new(play_area);
         World {
             // problem: Coordinates inside envresource
-            spawned_resources: EnvResource::randomize_resources(
+            spawned_resources: EnvResource::randomize_world_resources(
                 spawn_amount_of_resources,
                 resource_max_cap,
                 area,
@@ -34,10 +42,11 @@ impl World {
             recharge_interval: world_recharge_interval,
         }
     }
+    /// Create a new World with randomized values.
     pub fn randomize(area: WorldSize) -> World {
         let mut rng = rand::thread_rng();
         World {
-            spawned_resources: EnvResource::randomize_resources(100, 100, area),
+            spawned_resources: EnvResource::randomize_world_resources(100, 100, area),
             consumption_rate: 1,
             recharge_rate: 1,
             game_tick: rng.gen_range(1..5),
@@ -45,33 +54,22 @@ impl World {
             recharge_interval: rng.gen_range(100..500),
         }
     }
-    fn randomize_resources(amount: usize, at_most: i32, play_area: WorldSize) -> Vec<EnvResource> {
-        let mut rsc_vec = Vec::with_capacity(amount);
-        let convert_amount_to_i32 = i32::try_from(amount);
-        let amount_as_i32 = match convert_amount_to_i32 {
-            Ok(val) => val,
-            Err(e) => {
-                println!("Error converting world resource amount to i32\n\n{e}");
-                0
-            }
-        };
-        for num in 0..=amount_as_i32 {
-            rsc_vec.push(EnvResource::randomize(at_most, num, play_area))
-        }
-        rsc_vec
-    }
 }
+/// Struct for WorldSize, dictates how big the play area is.
 #[derive(Debug, Clone, Copy)]
 pub struct WorldSize(i32, i32);
 impl WorldSize {
+    /// Creates a new WorldSize.
     pub fn new(size: i32) -> WorldSize {
         WorldSize(-size, size)
     }
+    /// Creates a new, randomized WorldSize.
     pub fn randomize(min: i32, max: i32) -> WorldSize {
         let mut rng = rand::thread_rng();
         let max_range = rng.gen_range(min..max);
         WorldSize(-max_range, max_range)
     }
+    /// Returns the maximum and minimum x and y values of a World.
     pub fn get_values(&self) -> (i32, i32) {
         (self.0, self.1)
     }
