@@ -92,6 +92,8 @@ impl<'a> TransferResources for MotherShip<'a> {
 }
 impl<'a> GenericInfo for MotherShip<'a> {
     fn display_info(&self) {
+        let loc_x = self.location.x;
+        let loc_y = self.location.y;
         let mtr_ship_dock_msg = match self.dock {
             MotherShipDockStatus::Populated => String::from("A ship is docked."),
             MotherShipDockStatus::Empty => String::from("No ship is docked."),
@@ -100,7 +102,7 @@ impl<'a> GenericInfo for MotherShip<'a> {
             MotherShipRechargeStatus::Charging => String::from("Recharging a ship"),
             MotherShipRechargeStatus::Idle => String::from("Recharge port is vacant"),
         };
-        println!("--Mothership Status--\nName: {}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
+        println!("--Mothership Status--\nName: {}\nLocation: {loc_x}, {loc_y}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
     }
     fn display_resources(&self) {
         let consumables = {

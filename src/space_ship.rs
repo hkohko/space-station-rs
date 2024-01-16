@@ -122,6 +122,10 @@ impl<'a> SpaceShip<'a> {
             println!("{0: <20}  |  {1: <20}", kind_string, axis_string);
         }
     }
+    pub fn get_location(&self) -> (i32, i32) {
+        (self.location.x, self.location.y)
+        
+    }
 }
 impl<'a> TransferResources for SpaceShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {

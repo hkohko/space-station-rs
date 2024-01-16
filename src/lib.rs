@@ -151,6 +151,13 @@ impl LevelCap for Storage {
         }
     }
 }
+pub enum Commands {
+    MoveTo,
+    Mine,
+    Recharge,
+    SpaceShipInfo,
+    Empty,
+}
 /// Spaceship docking enums.
 #[derive(Debug)]
 pub enum SpaceShipDockStatus {
