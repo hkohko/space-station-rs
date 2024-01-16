@@ -32,6 +32,7 @@ impl<'a> SpaceShip<'a> {
         self.dock_status = SpaceShipDockStatus::Undocked;
     }
     fn recharge_backend(&mut self, mtr_shp: &mut MotherShip, recharge_ms: u64) {
+        let recharge_amount_world_param = self.world_parameters.recharge_rate;
         let initial_consumable_level = match self.consumable {
             Resources::FoodWater(val) => val,
             _ => 0,
@@ -51,9 +52,9 @@ impl<'a> SpaceShip<'a> {
         ];
         let min = a.iter().min().unwrap_or(&0);
         for _ in *min..100 {
-            self.receive_resources(Resources::Fuel(1), mtr_shp);
-            self.receive_resources(Resources::Oxygen(1), mtr_shp);
-            self.receive_resources(Resources::FoodWater(1), mtr_shp);
+            self.receive_resources(Resources::Fuel(recharge_amount_world_param), mtr_shp);
+            self.receive_resources(Resources::Oxygen(recharge_amount_world_param), mtr_shp);
+            self.receive_resources(Resources::FoodWater(recharge_amount_world_param), mtr_shp);
             sleep(Duration::from_millis(recharge_ms));
         }
     }
