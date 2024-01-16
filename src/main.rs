@@ -49,7 +49,10 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
                     y = val
                 }
             },
-            Err(e) => println!("{e}"),
+            Err(e) => {
+                println!("{e}");
+                return
+                },
         }
     }
     
