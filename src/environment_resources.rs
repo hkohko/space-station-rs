@@ -7,6 +7,7 @@ pub struct EnvResource {
     id: i32,
 }
 impl EnvResource {
+    /// Spawn resources with randomized values.
     pub fn randomize(at_most: i32, id_num: i32, play_area: WorldSize) -> EnvResource {
         EnvResource {
             kind: Resources::randomize(at_most),
@@ -22,10 +23,12 @@ impl EnvResource {
     pub fn get_coordinates(&self) -> Coordinates {
         self.coordinates
     }
+    /// Returns the id of an environment resource.
     pub fn get_id(&self) -> i32 {
         self.id
     }
-    pub fn randomize_resources(
+    /// Spawn a vector of resources for the game world.
+    pub fn randomize_world_resources(
         amount: usize,
         at_most: i32,
         play_area: WorldSize,
