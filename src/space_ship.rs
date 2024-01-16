@@ -103,6 +103,25 @@ impl<'a> SpaceShip<'a> {
         self.recharge_backend(mtr_shp, recharge_ms);
         self.undocked(mtr_shp);
     }
+    /// Shows resources within a certain distance of the ship.
+    pub fn ping(&self) {
+        let mut within_distance = Vec::with_capacity(100);
+        for resource in self.world_parameters.spawned_resources.iter() {
+            let resource_location = resource.get_coordinates().get_distance(self.location);
+            if resource_location < 120.0 {
+                within_distance.push(resource)
+            }
+        }
+        println!("{0: <20}  |  {1: <20}", "Resource", "Location\n");
+        for resource in within_distance.into_iter() {
+            let kind = resource.get_kind();
+            let x_axis = resource.get_coordinates().x;
+            let y_axis = resource.get_coordinates().y;
+            let axis_string = format!("{x_axis}, {y_axis}");
+            let kind_string = format!("{kind:?}");
+            println!("{0: <20}  |  {1: <20}", kind_string, axis_string);
+        }
+    }
 }
 impl<'a> TransferResources for SpaceShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
