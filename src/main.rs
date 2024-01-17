@@ -69,19 +69,21 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
 }
 fn handle_mine(spc_ship: &mut SpaceShip, world: &World) {
     let id = get_input("Enter resource ID: ");
-    match id.parse::<i32>() {
-        Err(e) => println!("{e}"),
-        Ok(val) => {
-            let resources = &world.spawned_resources;
-            for refcell_rsc in resources.iter() {
-                match RefCell::try_borrow_mut(refcell_rsc){
-                    Err(e) => println!("{e}"),
-                    Ok(rsc) => {
-                        if rsc.get_id() == val {
-                            let mut to_mine = rsc;
-                            spc_ship.get_env_resources(&mut to_mine);
-                        }
-                    }
+    let id_as_i32 = match id.parse::<i32>() {
+        Err(e) => {
+            println!("{e}"); 
+            return
+            },
+        Ok(val) => val,
+    };
+    let resources = &world.spawned_resources;
+    for refcell_rsc in resources.iter() {
+        match RefCell::try_borrow_mut(refcell_rsc){
+            Err(e) => println!("{e}"),
+            Ok(rsc) => {
+                if rsc.get_id() == id_as_i32 {
+                    let mut to_mine = rsc;
+                    spc_ship.get_env_resources(&mut to_mine);
                 }
             }
         }
