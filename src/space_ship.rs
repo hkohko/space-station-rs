@@ -2,6 +2,8 @@
 use crate::mother_ship::MotherShip;
 use crate::prelude::*;
 use rand::{self, prelude::*};
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::thread::sleep;
 use std::time::Duration;
 /// Struct for spaceships.
@@ -105,21 +107,20 @@ impl<'a> SpaceShip<'a> {
     }
     /// Shows resources within a certain distance of the ship.
     pub fn ping(&self) {
-        let mut within_distance = Vec::with_capacity(100);
-        for resource in self.world_parameters.spawned_resources.iter() {
-            let resource_location = resource.get_coordinates().get_distance(self.location);
+        println!("{0: <20}  |  {1: <20}  |  {2: <20}", "ID" ,"Resource", "Location\n");
+        let resource = &self.world_parameters.spawned_resources;
+        for refcell_rsc in resource.iter() {
+            let rsc = refcell_rsc.borrow();
+            let resource_location = rsc.get_coordinates().get_distance(self.location);
             if resource_location < 120.0 {
-                within_distance.push(resource)
+                let kind = rsc.get_kind();
+                let x_axis = rsc.get_coordinates().x;
+                let y_axis = rsc.get_coordinates().y;
+                let id = rsc.get_id();
+                let axis_string = format!("{x_axis}, {y_axis}");
+                let kind_string = format!("{kind:?}");
+                println!("{0: <20}  |  {1: <20}  |  {2: <20}", id ,kind_string, axis_string);
             }
-        }
-        println!("{0: <20}  |  {1: <20}", "Resource", "Location\n");
-        for resource in within_distance.into_iter() {
-            let kind = resource.get_kind();
-            let x_axis = resource.get_coordinates().x;
-            let y_axis = resource.get_coordinates().y;
-            let axis_string = format!("{x_axis}, {y_axis}");
-            let kind_string = format!("{kind:?}");
-            println!("{0: <20}  |  {1: <20}", kind_string, axis_string);
         }
     }
     pub fn get_location(&self) -> (i32, i32) {
@@ -235,6 +236,10 @@ impl<'a> TransferResources for SpaceShip<'a> {
         }
     }
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {
+        if !(self.location.get_distance(_env_resource.get_coordinates()) < 5.0) {
+            println!("You are too far from the target resource");
+            return
+        }
         match _env_resource.get_kind() {
             Resources::FoodWater(val) => {
                 for _ in 0..=val {
@@ -287,6 +292,22 @@ impl<'a> GenericInfo for SpaceShip<'a> {
             _ => 0,
         };
         println!("--{n}'s Resources--\nFood & Water: {c}\nOxygen: {o}\nFuel: {f}");
+    }
+    fn display_storage(&self) {
+        let mut consumable = 0;
+        let mut oxygen = 0;
+        let mut fuel = 0;
+        if let Resources::FoodWater(val) = self.storage.consumable {
+            consumable = val;
+        }
+        if let Resources::Oxygen(val) = self.storage.oxygen {
+            oxygen = val;
+        }
+        if let Resources::Fuel(val) = self.storage.fuel {
+            fuel = val;
+        }
+        println!("--{}'s Storage--\nFoodWater: {consumable}\nOxygen: {oxygen}\nFuel: {fuel}", self.name);
+        
     }
 }
 impl<'a> Move for SpaceShip<'a> {

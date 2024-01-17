@@ -1,10 +1,12 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate::prelude::*;
 use rand::{self, Rng};
 #[derive(Debug)]
 /// Struct for a World. Every game must have a world.
 pub struct World {
     /// Resources inside a world.
-    pub spawned_resources: Vec<EnvResource>,
+    pub spawned_resources: Rc<Vec<RefCell<EnvResource>>>,
     /// Set consumption rate of ships.
     pub consumption_rate: i32,
     /// Set how fast a recharge should go.
@@ -30,11 +32,11 @@ impl World {
         let area = WorldSize::new(play_area);
         World {
             // problem: Coordinates inside envresource
-            spawned_resources: EnvResource::randomize_world_resources(
+            spawned_resources: Rc::new(EnvResource::randomize_world_resources(
                 spawn_amount_of_resources,
                 resource_max_cap,
                 area,
-            ),
+            )),
             consumption_rate: world_consumption_rate,
             game_tick: tick,
             recharge_rate: world_recharge_rate,
@@ -46,7 +48,7 @@ impl World {
     pub fn randomize(area: WorldSize) -> World {
         let mut rng = rand::thread_rng();
         World {
-            spawned_resources: EnvResource::randomize_world_resources(100, 100, area),
+            spawned_resources: Rc::new(EnvResource::randomize_world_resources(100, 100, area)),
             consumption_rate: 1,
             recharge_rate: 1,
             game_tick: rng.gen_range(1..5),

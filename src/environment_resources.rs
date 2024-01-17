@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 use crate::prelude::*;
 #[derive(Debug, Clone, Copy)]
 /// Struct for resources available in the environment.
@@ -32,7 +34,7 @@ impl EnvResource {
         amount: usize,
         at_most: i32,
         play_area: WorldSize,
-    ) -> Vec<EnvResource> {
+    ) -> Vec<RefCell<EnvResource>> {
         let mut rsc_vec = Vec::with_capacity(amount);
         let convert_amount_to_i32 = i32::try_from(amount);
         let amount_as_i32 = match convert_amount_to_i32 {
@@ -43,7 +45,7 @@ impl EnvResource {
             }
         };
         for num in 0..=amount_as_i32 {
-            rsc_vec.push(EnvResource::randomize(at_most, num, play_area))
+            rsc_vec.push(RefCell::new(EnvResource::randomize(at_most, num, play_area)))
         }
         rsc_vec
     }

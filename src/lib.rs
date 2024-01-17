@@ -90,7 +90,7 @@ pub trait Move {
     }
 }
 /// Struct for storage, a way for ships to store resources mined from the environment.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Storage {
     consumable: Resources,
     oxygen: Resources,
@@ -156,6 +156,7 @@ pub enum Commands {
     Mine,
     Recharge,
     SpaceShipInfo,
+    Ping,
     Empty,
 }
 /// Spaceship docking enums.
