@@ -128,6 +128,7 @@ impl<'a> SpaceShip<'a> {
             }
         }
     }
+    /// Return the location of the spaceship.
     pub fn get_location(&self) -> (i32, i32) {
         (self.location.x, self.location.y)
     }

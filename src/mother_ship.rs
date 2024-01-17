@@ -60,6 +60,7 @@ impl<'a> MotherShip<'a> {
             None => (),
         };
     }
+    /// Get Mothership's coordinates.
     pub fn get_coordinates(&self) -> Coordinates {
         self.location
     }

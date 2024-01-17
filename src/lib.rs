@@ -88,6 +88,7 @@ pub trait Move {
     fn to_location(&mut self, _to: Coordinates) -> bool {
         false
     }
+    /// Teleports a ship to a mothership. Consuming no fuel in the process.
     fn teleport(&mut self, _mtr_ship: &MotherShip) {}
 }
 /// Struct for storage, a way for ships to store resources mined from the environment.
@@ -152,12 +153,19 @@ impl LevelCap for Storage {
         }
     }
 }
+/// Command enums for user input.
 pub enum Commands {
+    /// Move command.
     MoveTo,
+    /// Mine environmental resources.
     Mine,
+    /// Recharge a ship by teleporting to a mothership.
     Recharge,
+    /// Show a space ship's info.
     SpaceShipInfo,
+    /// Show resources within a certain distance of the ship.
     Ping,
+    /// Default enum if no commands are given. Should do nothing.
     Empty,
 }
 /// Spaceship docking enums.
