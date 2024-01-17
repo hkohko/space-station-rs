@@ -1,5 +1,5 @@
 use space_station::prelude::*;
-use space_station::Commands::{Empty, Mine, MoveTo, Ping, Recharge, SpaceShipInfo};
+use space_station::Commands::{Empty, Mine, MoveTo, Ping, Recharge, SpaceShipInfo, Offload};
 use std::cell::RefCell;
 use std::io;
 fn main() {
@@ -25,6 +25,7 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
             Recharge => handle_recharge(&mut spc_ship, &mut mtr_ship),
             SpaceShipInfo => handle_sinfo(&spc_ship),
             Ping => handle_ping(&spc_ship),
+            Offload => handle_offload(),
             Empty => continue,
         }
     }
@@ -95,6 +96,9 @@ fn handle_sinfo(spc_ship: &SpaceShip) {
     println!();
     spc_ship.display_storage();
     println!();
+}
+fn handle_offload() {
+    
 }
 fn parse_command(input_cmd: String) -> Commands {
     match input_cmd.as_str() {

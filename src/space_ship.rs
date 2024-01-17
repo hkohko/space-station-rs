@@ -214,29 +214,44 @@ impl<'a> TransferResources for SpaceShip<'a> {
             }
         }
     }
-    fn receive_to_storage(&mut self, _rsc: Resources) {
-        let rate = self.world_parameters.recharge_rate;
+    fn receive_to_storage(&mut self, _rsc: Resources) -> bool {
+        let max_cap = 50;
         match _rsc {
-            Resources::FoodWater(_) => {
+            Resources::FoodWater(rate) => {
                 let initial_consumable_level = match self.storage.consumable {
                     Resources::FoodWater(val) => val,
                     _ => 0,
                 };
+                if initial_consumable_level == max_cap {
+                    println!("FoodWater storage is full!");
+                    return true 
+                }
                 self.storage.consumable = Resources::FoodWater(initial_consumable_level + rate);
+                false
             }
-            Resources::Oxygen(_) => {
+            Resources::Oxygen(rate) => {
                 let initial_oxygen_level = match self.storage.oxygen {
                     Resources::Oxygen(val) => val,
                     _ => 0,
                 };
+                if initial_oxygen_level == max_cap {
+                    println!("Oxygen storage is full!");
+                    return true
+                }
                 self.storage.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
+                false
             }
-            Resources::Fuel(_) => {
+            Resources::Fuel(rate) => {
                 let initial_fuel_level = match self.storage.fuel {
                     Resources::Fuel(val) => val,
                     _ => 0,
                 };
+                if initial_fuel_level == max_cap {
+                    println!("Fuel storage is full!");
+                    return true
+                }
                 self.storage.fuel = Resources::Fuel(initial_fuel_level + rate);
+                false
             }
         }
     }
@@ -245,29 +260,58 @@ impl<'a> TransferResources for SpaceShip<'a> {
             println!("You are too far from the target resource");
             return;
         }
+        let recharge_rate = self.world_parameters.recharge_rate;
+        let consumption_rate = self.world_parameters.consumption_rate;
         match _env_resource.get_kind() {
             Resources::FoodWater(val) => {
                 for _ in 0..=val {
+                    let check_full = self.receive_to_storage(Resources::FoodWater(0));
+                    if check_full {
+                        break
+                    }
                     let still_available =
-                        _env_resource.give_resources(Resources::FoodWater(1), val);
+                        _env_resource.give_resources(Resources::FoodWater(consumption_rate), val);
                     if still_available {
-                        self.receive_to_storage(Resources::FoodWater(1))
+                        let is_full = self.receive_to_storage(Resources::FoodWater(recharge_rate));
+                        if is_full {
+                            break
+                        }
+                    } else {
+                        break
                     }
                 }
             }
             Resources::Oxygen(val) => {
                 for _ in 0..=val {
-                    let still_available = _env_resource.give_resources(Resources::Oxygen(1), val);
+                    let check_full = self.receive_to_storage(Resources::Oxygen(0));
+                    if check_full {
+                        break
+                    }
+                    let still_available = _env_resource.give_resources(Resources::Oxygen(consumption_rate), val);
                     if still_available {
-                        self.receive_to_storage(Resources::Oxygen(1))
+                        let is_full = self.receive_to_storage(Resources::Oxygen(recharge_rate));
+                        if is_full {                   
+                            break
+                        }
+                    } else {
+                        break
                     }
                 }
             }
             Resources::Fuel(val) => {
                 for _ in 0..=val {
-                    let still_available = _env_resource.give_resources(Resources::Fuel(1), val);
+                    let check_full = self.receive_to_storage(Resources::Fuel(0));
+                    if check_full {
+                        break
+                    }
+                    let still_available = _env_resource.give_resources(Resources::Fuel(consumption_rate), val);
                     if still_available {
-                        self.receive_to_storage(Resources::Fuel(1))
+                        let is_full = self.receive_to_storage(Resources::Fuel(recharge_rate));
+                        if is_full {                 
+                            break
+                        }
+                    } else {
+                        break
                     }
                 }
             }

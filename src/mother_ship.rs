@@ -93,6 +93,35 @@ impl<'a> TransferResources for MotherShip<'a> {
         }
         false
     }
+    fn receive_to_storage(&mut self, _rsc: Resources) -> bool {
+        let rate = self.world_parameters.recharge_rate;
+        match _rsc {
+            Resources::FoodWater(_) => {
+                let initial_consumable_level = match self.storage.consumable {
+                    Resources::FoodWater(val) => val,
+                    _ => 0,
+                };
+                self.storage.consumable = Resources::FoodWater(initial_consumable_level + rate);
+                true
+            }
+            Resources::Oxygen(_) => {
+                let initial_oxygen_level = match self.storage.oxygen {
+                    Resources::Oxygen(val) => val,
+                    _ => 0,
+                };
+                self.storage.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
+                true
+            }
+            Resources::Fuel(_) => {
+                let initial_fuel_level = match self.storage.fuel {
+                    Resources::Fuel(val) => val,
+                    _ => 0,
+                };
+                self.storage.fuel = Resources::Fuel(initial_fuel_level + rate);
+                true
+            }
+        }
+    }
 }
 impl<'a> GenericInfo for MotherShip<'a> {
     fn display_info(&self) {

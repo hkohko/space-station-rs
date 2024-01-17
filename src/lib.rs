@@ -78,7 +78,9 @@ pub trait TransferResources {
     {
     }
     /// Store environment resources inside the resource storage of a ship.
-    fn receive_to_storage(&mut self, _rsc: Resources) {}
+    fn receive_to_storage(&mut self, _rsc: Resources) -> bool {
+        false
+    }
     /// Implementation WIP
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
 }
@@ -165,6 +167,8 @@ pub enum Commands {
     SpaceShipInfo,
     /// Show resources within a certain distance of the ship.
     Ping,
+    /// Offload storage to a mothership.
+    Offload, 
     /// Default enum if no commands are given. Should do nothing.
     Empty,
 }
