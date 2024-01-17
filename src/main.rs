@@ -2,7 +2,6 @@ use space_station::prelude::*;
 use space_station::Commands::{MoveTo, Mine, Recharge, SpaceShipInfo, Ping, Empty};
 use std::cell::RefCell;
 use std::io;
-use std::rc::Rc;
 fn main() {
     let world = World::new(
         500,

@@ -32,6 +32,7 @@ fn transfer_storage() {
         Resources::Fuel(val) => val,
         Resources::Oxygen(val) => val,
     };
+    // test needs to be modified to account for distance
     assert_eq!(end_val_1 - starting_env_1, -starting_env_1);
     assert_eq!(end_val_2 - starting_env_2, -starting_env_2)
 }
