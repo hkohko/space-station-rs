@@ -23,7 +23,7 @@ A plain TUI game that implements these features:
 - [ ] A spaceship that is able to convert environment resource in its storage into fuel, if it ran out of fuel.
 - [x] A spaceship that can be recharged at a mothership/any game object is able to transfer resource.
 - [x] A spaceship that is able to mine environment resource and store them in a storage of some form.
-- [ ] A spaceship that is able to 'ping' and in return gets a list of resources that is not too far away from it.
+- [x] A spaceship that is able to 'ping' and in return gets a list of resources that is not too far away from it.
 - [ ] Set a cap to how much resource can be stored before it has to be offloaded to a mothership.
 ### Environment resources
 - [x] Spawn resources in a world, be it determined or randomized.
