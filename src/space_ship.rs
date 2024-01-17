@@ -339,6 +339,11 @@ impl<'a> Move for SpaceShip<'a> {
             false
         }
     }
+    fn teleport(&mut self, mtr_ship: &MotherShip) {
+        let mtr_ship_loc_x = mtr_ship.get_coordinates().x;
+        let mtr_ship_loc_y = mtr_ship.get_coordinates().y;
+        self.location = Coordinates::new(mtr_ship_loc_x, mtr_ship_loc_y, self.world_parameters.play_area);
+    }
 }
 impl<'a> GetResourceLevels for SpaceShip<'a> {
     fn get_resource_amount(&self, rsc: Resources) -> i32 {

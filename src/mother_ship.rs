@@ -60,6 +60,9 @@ impl<'a> MotherShip<'a> {
             None => (),
         };
     }
+    pub fn get_coordinates(&self) -> Coordinates {
+        self.location
+    }
 }
 impl<'a> TransferResources for MotherShip<'a> {
     fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {

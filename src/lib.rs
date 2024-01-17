@@ -8,7 +8,7 @@
 //!
 
 use environment_resources::EnvResource;
-use prelude::WorldSize;
+use prelude::{WorldSize, MotherShip};
 use rand::{self, Rng};
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
@@ -87,6 +87,9 @@ pub trait Move {
     /// Move a ship to a location, taking into account its fuel levels and distance.
     fn to_location(&mut self, _to: Coordinates) -> bool {
         false
+    }
+    fn teleport(&mut self, mtr_ship: &MotherShip) {
+        
     }
 }
 /// Struct for storage, a way for ships to store resources mined from the environment.

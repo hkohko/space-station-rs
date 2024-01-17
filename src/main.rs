@@ -30,7 +30,7 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
         match cmdkind {
             MoveTo => handle_move(&mut spc_ship, &world),
             Mine => handle_mine(&mut spc_ship, &world),
-            Recharge => handle_recharge(),
+            Recharge => handle_recharge(&mut spc_ship, &mut mtr_ship),
             SpaceShipInfo => handle_sinfo(&spc_ship),
             Ping => handle_ping(&spc_ship),
             Empty => continue,
@@ -63,7 +63,6 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
                 },
         }
     }
-    
     let to = Coordinates::new(x, y, world.play_area);
     spc_ship.to_location(to);
 }
@@ -92,8 +91,9 @@ fn handle_mine(spc_ship: &mut SpaceShip, world: &World) {
 fn handle_ping(spc_ship: &SpaceShip) {
     spc_ship.ping()
 }
-fn handle_recharge() {
-    
+fn handle_recharge(spc_ship: &mut SpaceShip, mtr_ship: &mut MotherShip) {
+    spc_ship.teleport(mtr_ship);
+    spc_ship.recharge(mtr_ship);
 }
 fn handle_sinfo(spc_ship: &SpaceShip) {
     println!("");
