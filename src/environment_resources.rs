@@ -45,7 +45,9 @@ impl EnvResource {
             }
         };
         for num in 0..=amount_as_i32 {
-            rsc_vec.push(RefCell::new(EnvResource::randomize(at_most, num, play_area)))
+            rsc_vec.push(RefCell::new(EnvResource::randomize(
+                at_most, num, play_area,
+            )))
         }
         rsc_vec
     }

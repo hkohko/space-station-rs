@@ -8,7 +8,7 @@
 //!
 
 use environment_resources::EnvResource;
-use prelude::{WorldSize, MotherShip};
+use prelude::{MotherShip, WorldSize};
 use rand::{self, Rng};
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
@@ -88,9 +88,7 @@ pub trait Move {
     fn to_location(&mut self, _to: Coordinates) -> bool {
         false
     }
-    fn teleport(&mut self, mtr_ship: &MotherShip) {
-        
-    }
+    fn teleport(&mut self, _mtr_ship: &MotherShip) {}
 }
 /// Struct for storage, a way for ships to store resources mined from the environment.
 #[derive(Debug, Clone, Copy)]
@@ -307,7 +305,7 @@ impl Coordinates {
         let side_a = from.x - self.x;
         let side_b = from.y - self.y;
         let dest = f64::from(side_a.pow(2) + side_b.pow(2));
-        let sqrt = dest.sqrt().floor();
-        sqrt
+
+        dest.sqrt().floor()
     }
 }

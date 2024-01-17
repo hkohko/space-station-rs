@@ -1,17 +1,9 @@
 use space_station::prelude::*;
-use space_station::Commands::{MoveTo, Mine, Recharge, SpaceShipInfo, Ping, Empty};
+use space_station::Commands::{Empty, Mine, MoveTo, Ping, Recharge, SpaceShipInfo};
 use std::cell::RefCell;
 use std::io;
 fn main() {
-    let world = World::new(
-        500,
-        200,
-        50,
-        1,
-        1,
-        1,
-        100
-    );
+    let world = World::new(500, 200, 50, 1, 1, 1, 100);
     let (spc_ship_name, mtr_ship_name) = name_inputs();
     game_loop(mtr_ship_name, spc_ship_name, world)
 }
@@ -19,9 +11,9 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
     let mut mtr_ship = MotherShip::new(spc_ship_name.as_str(), &world);
     let mut spc_ship = SpaceShip::new(mtr_ship_name.as_str(), &world);
     let list_of_commands = vec!["move", "mine", "recharge", "sinfo", "ping"];
-    
+
     loop {
-        println!("");
+        println!();
         let cmd = get_command();
         let cmdkind = match validate_commands(cmd, &list_of_commands) {
             Some(cmd) => parse_command(cmd),
@@ -42,10 +34,10 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
     let mut y = 0;
     println!("\nCurrent location: {:?}", spc_ship.get_location());
     let cmd = get_input("Move to: ");
-    let split_by_comma = cmd.split(",").collect::<Vec<&str>>();
+    let split_by_comma = cmd.split(',').collect::<Vec<&str>>();
     if split_by_comma.len() != 2 {
         println!("Invalid Coordinate.\nPlease provide an x,y coordinate");
-        return
+        return;
     }
     for (idx, coords) in split_by_comma.iter().enumerate() {
         let trim = coords.trim();
@@ -56,11 +48,11 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
                 } else {
                     y = val
                 }
-            },
+            }
             Err(e) => {
                 println!("{e}");
-                return
-                },
+                return;
+            }
         }
     }
     let to = Coordinates::new(x, y, world.play_area);
@@ -70,14 +62,14 @@ fn handle_mine(spc_ship: &mut SpaceShip, world: &World) {
     let id = get_input("Enter resource ID: ");
     let id_as_i32 = match id.parse::<i32>() {
         Err(e) => {
-            println!("{e}"); 
-            return
-            },
+            println!("{e}");
+            return;
+        }
         Ok(val) => val,
     };
     let resources = &world.spawned_resources;
     for refcell_rsc in resources.iter() {
-        match RefCell::try_borrow_mut(refcell_rsc){
+        match RefCell::try_borrow_mut(refcell_rsc) {
             Err(e) => println!("{e}"),
             Ok(rsc) => {
                 if rsc.get_id() == id_as_i32 {
@@ -96,13 +88,13 @@ fn handle_recharge(spc_ship: &mut SpaceShip, mtr_ship: &mut MotherShip) {
     spc_ship.recharge(mtr_ship);
 }
 fn handle_sinfo(spc_ship: &SpaceShip) {
-    println!("");
+    println!();
     spc_ship.display_info();
-    println!("");
+    println!();
     spc_ship.display_resources();
-    println!("");
+    println!();
     spc_ship.display_storage();
-    println!("");
+    println!();
 }
 fn parse_command(input_cmd: String) -> Commands {
     match input_cmd.as_str() {
@@ -111,26 +103,27 @@ fn parse_command(input_cmd: String) -> Commands {
         "recharge" => Recharge,
         "sinfo" => SpaceShipInfo,
         "ping" => Ping,
-        _ => Empty
+        _ => Empty,
     }
 }
 fn get_command() -> String {
-    let cmd = get_input("Enter Command: ");
-    cmd
-
+    get_input("Enter Command: ")
 }
-fn validate_commands(command: String, cmd_list: &Vec<&str>) -> Option<String>{
-    if command.len() == 0 {
-        return None
+fn validate_commands(command: String, cmd_list: &Vec<&str>) -> Option<String> {
+    if command.is_empty() {
+        return None;
     }
     if cmd_list.contains(&command.as_str()) {
         Some(command)
     } else {
-        println!("Command not found! available commands:\n\n{}", cmd_list.join(", "));
+        println!(
+            "Command not found! available commands:\n\n{}",
+            cmd_list.join(", ")
+        );
         None
     }
 }
-fn name_inputs() -> (String, String){
+fn name_inputs() -> (String, String) {
     let mut spc_ship = String::new();
     let mut mtr_ship = String::new();
     let stdin = io::stdin();
@@ -144,7 +137,10 @@ fn name_inputs() -> (String, String){
         Ok(_) => (),
         Err(e) => println!("{e}"),
     }
-    (spc_ship.trim().to_uppercase(), mtr_ship.trim().to_uppercase())
+    (
+        spc_ship.trim().to_uppercase(),
+        mtr_ship.trim().to_uppercase(),
+    )
 }
 fn get_input(msg: &str) -> String {
     println!("{msg}");
