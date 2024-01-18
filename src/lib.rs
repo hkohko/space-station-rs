@@ -186,7 +186,7 @@ impl Oxygen {
 }
 impl LevelCap for Oxygen {
     fn adjust_max_level(&mut self) {
-        self.0 = std::cmp::max(self.0, 100);
+        self.0 = std::cmp::min(self.0, 100);
     }
 }
 #[derive(Debug, Clone, Copy)]
@@ -202,7 +202,7 @@ impl FoodWater {
 }
 impl LevelCap for FoodWater {
     fn adjust_max_level(&mut self) {
-        self.0 = std::cmp::max(self.0, 100)
+        self.0 = std::cmp::min(self.0, 100)
     }
 }
 #[derive(Debug, Clone, Copy)]
@@ -218,7 +218,7 @@ impl Fuel {
 }
 impl LevelCap for Fuel {
     fn adjust_max_level(&mut self) {
-        self.0 = std::cmp::max(self.0, 100);
+        self.0 = std::cmp::min(self.0, 100);
     }
 }
 /// The main resources of the game.
