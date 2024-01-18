@@ -3,7 +3,7 @@ use space_station::Commands::{Empty, Mine, MoveTo, Ping, Recharge, SpaceShipInfo
 use std::cell::RefCell;
 use std::io;
 fn main() {
-    let world = World::new(500, 200, 50, 1, 1, 1, 100);
+    let world = World::new(500, 200, 50, 1, 200, 1, 100, 100);
     let (spc_ship_name, mtr_ship_name) = name_inputs();
     game_loop(mtr_ship_name, spc_ship_name, world)
 }
@@ -33,7 +33,7 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
 fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
     let mut x = 0;
     let mut y = 0;
-    println!("\nCurrent location: {:?}", spc_ship.get_location());
+    println!("\nCurrent location: {:?}", spc_ship.get_coordinates());
     let cmd = get_input("Move to: ");
     let split_by_comma = cmd.split(',').collect::<Vec<&str>>();
     if split_by_comma.len() != 2 {

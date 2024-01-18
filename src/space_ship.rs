@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 use crate::mother_ship::MotherShip;
-use crate::prelude::*;
+use crate::{prelude::*, GameWarning};
 use rand::{self, prelude::*};
 
 use std::thread::sleep;
@@ -120,8 +120,12 @@ impl<'a> SpaceShip<'a> {
         }
     }
     /// Return the location of the spaceship.
-    pub fn get_location(&self) -> (i32, i32) {
-        (self.location.x, self.location.y)
+    pub fn get_coordinates(&self) -> Coordinates {
+        self.location
+    }
+    /// Return the storage details of the spaceship.
+    pub fn get_storage(&self) -> Storage {
+        self.storage
     }
 }
 impl<'a> TransferResources for SpaceShip<'a> {
@@ -197,12 +201,12 @@ impl<'a> TransferResources for SpaceShip<'a> {
         }
     }
     fn receive_to_storage(&mut self, _rsc: ResourceKind) -> bool {
-        let max_cap = 50;
+        let max_cap = 200;
         match _rsc {
             ResourceKind::FoodWater(rate) => {
                 if self.storage.consumable.0 == max_cap {
                     println!("FoodWater storage is full!");
-                    return true 
+                    return true
                 }
                 self.storage.consumable = FoodWater(self.storage.consumable.0 + rate);
                 false
@@ -225,10 +229,10 @@ impl<'a> TransferResources for SpaceShip<'a> {
             }
         }
     }
-    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {
+    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) -> GameWarning {
         if !(self.location.get_distance(_env_resource.get_coordinates()) < 5.0) {
             println!("You are too far from the target resource");
-            return;
+            return GameWarning::Unreachable
         }
         let recharge_rate = self.world_parameters.recharge_rate;
         let consumption_rate = self.world_parameters.consumption_rate;
@@ -237,53 +241,56 @@ impl<'a> TransferResources for SpaceShip<'a> {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::FoodWater(0));
                     if check_full {
-                        break
+                        return GameWarning::ShipStorageFull
                     }
                     let still_available =
                         _env_resource.give_resources(ResourceKind::FoodWater(consumption_rate), val);
                     if still_available {
                         let is_full = self.receive_to_storage(ResourceKind::FoodWater(recharge_rate));
                         if is_full {
-                            break
+                            return GameWarning::ShipStorageFull
                         }
                     } else {
-                        break
+                        return GameWarning::ResourceExhausted
                     }
                 }
+                GameWarning::Nominal
             }
             ResourceKind::Oxygen(val) => {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::Oxygen(0));
                     if check_full {
-                        break
+                        return GameWarning::ShipStorageFull
                     }
                     let still_available = _env_resource.give_resources(ResourceKind::Oxygen(consumption_rate), val);
                     if still_available {
                         let is_full = self.receive_to_storage(ResourceKind::Oxygen(recharge_rate));
                         if is_full {                   
-                            break
+                            return GameWarning::ShipStorageFull
                         }
                     } else {
-                        break
+                        return GameWarning::ResourceExhausted
                     }
                 }
+                GameWarning::Nominal
             }
             ResourceKind::Fuel(val) => {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::Fuel(0));
                     if check_full {
-                        break
+                        return GameWarning::ShipStorageFull
                     }
                     let still_available = _env_resource.give_resources(ResourceKind::Fuel(consumption_rate), val);
                     if still_available {
                         let is_full = self.receive_to_storage(ResourceKind::Fuel(recharge_rate));
                         if is_full {                 
-                            break
+                            return GameWarning::ShipStorageFull
                         }
                     } else {
-                        break
+                        return GameWarning::ResourceExhausted
                     }
                 }
+                GameWarning::Nominal
             }
         }
     }

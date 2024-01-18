@@ -4,7 +4,7 @@ pub fn experimental_main() {
     build_world();
 }
 fn build_world() {
-    let w = World::new(100, 10, 100, 1, 1, 1, 100);
+    let w = World::new(100, 10, 100, 1, 200, 1, 1, 100);
     dbg!(&w);
 }
 fn resource_spawning_consuming_idea() {

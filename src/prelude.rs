@@ -5,5 +5,5 @@ pub use crate::world::{World, WorldSize};
 pub use crate::{
     Commands, Coordinates, GenericInfo, GetResourceLevels, LevelCap, MotherShipDockStatus,
     MotherShipRechargeStatus, Move, Quadrants, ResourceKind, SpaceShipDockStatus, Storage,
-    TransferResources, FoodWater, Oxygen, Fuel
+    TransferResources, FoodWater, Oxygen, Fuel, GameWarning
 };

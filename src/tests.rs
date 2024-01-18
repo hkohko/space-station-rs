@@ -1,40 +1,70 @@
 use std::collections::btree_map::Values;
 
 use crate::prelude::*;
-// #[test]
+#[test]
 fn transfer_storage() {
-    let play_area: i32 = 2;
-    let new_world = World::randomize(WorldSize::new(play_area));
+    let play_area: i32 = 100;
+    let new_world = World::new(play_area, 500, 100, 1, 50, 1, 1, 0);
     let mut new_ship = SpaceShip::new("Zeus", &new_world);
     let mut env_1 = EnvResource::randomize(50, 0, new_world.play_area);
     let mut env_2 = EnvResource::randomize(100, 1, new_world.play_area);
-    let starting_env_1 = match env_1.get_kind() {
-        ResourceKind::FoodWater(val) => val,
-        ResourceKind::Fuel(val) => val,
-        ResourceKind::Oxygen(val) => val,
-    };
-    let starting_env_2 = match env_2.get_kind() {
-        ResourceKind::FoodWater(val) => val,
-        ResourceKind::Fuel(val) => val,
-        ResourceKind::Oxygen(val) => val,
-    };
-    new_ship.get_env_resources(&mut env_1);
-    new_ship.get_env_resources(&mut env_2);
-    let end_val_1 = match env_1.get_kind() {
-        ResourceKind::FoodWater(val) => val,
-        ResourceKind::Fuel(val) => val,
-        ResourceKind::Oxygen(val) => val,
-    };
-    let end_val_2 = match env_2.get_kind() {
-        ResourceKind::FoodWater(val) => val,
-        ResourceKind::Fuel(val) => val,
-        ResourceKind::Oxygen(val) => val,
-    };
-    // test needs to be modified to account for new features:
-    // - distance
-    // - level cap
-    assert_eq!(end_val_1 - starting_env_1, -starting_env_1);
-    assert_eq!(end_val_2 - starting_env_2, -starting_env_2)
+
+    let status_env1 = new_ship.get_env_resources(&mut env_1);
+    let status_env2 = new_ship.get_env_resources(&mut env_2);
+    match status_env1 {
+        GameWarning::Nominal => (),
+        GameWarning::Unreachable => {
+            assert!(new_ship.get_coordinates().get_distance(env_1.get_coordinates()) > 5.0);
+        },
+        GameWarning::ShipStorageFull => {
+            match env_1.get_kind() {
+                ResourceKind::Oxygen(val) => {
+                    assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
+                }
+                ResourceKind::Fuel(val) => {
+                    assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
+                }
+                ResourceKind::FoodWater(val) => {
+                    assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
+                }
+            }
+        }
+        GameWarning::ResourceExhausted => {
+            match env_1.get_kind() {
+                ResourceKind::FoodWater(val) => assert_eq!(val, 0),
+                ResourceKind::Oxygen(val) => assert_eq!(val, 0),
+                ResourceKind::Fuel(val) => assert_eq!(val, 0),
+            }
+        }
+        _ => ()
+    }
+    match status_env2 {
+        GameWarning::Nominal => (),
+        GameWarning::Unreachable => {
+            assert!(new_ship.get_coordinates().get_distance(env_1.get_coordinates()) > 5.0);
+        },
+        GameWarning::ShipStorageFull => {
+            match env_2.get_kind() {
+                ResourceKind::Oxygen(val) => {
+                    assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
+                }
+                ResourceKind::Fuel(val) => {
+                    assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
+                }
+                ResourceKind::FoodWater(val) => {
+                    assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
+                }
+            }
+        }
+        GameWarning::ResourceExhausted => {
+            match env_2.get_kind() {
+                ResourceKind::FoodWater(val) => assert_eq!(val, 0),
+                ResourceKind::Oxygen(val) => assert_eq!(val, 0),
+                ResourceKind::Fuel(val) => assert_eq!(val, 0),
+            }
+        }
+        _ => ()
+    }
 }
 #[test]
 fn storage_negative() {
@@ -58,22 +88,9 @@ fn storage_positive() {
     assert_eq!(oxygen, 100);
     assert_eq!(fuel, 100);
 }
-// #[test] irrelevant test
-fn randomize_stuff() {
-    let play_area: i32 = 1000;
-    let w_size = WorldSize::new(play_area);
-    let new_coord = Coordinates::randomize(w_size);
-    dbg!(&new_coord);
-    let new_resources = ResourceKind::randomize(50);
-    dbg!(&new_resources);
-    let new_env_resource = EnvResource::randomize(50, 3, w_size);
-    dbg!(&new_env_resource.get_kind());
-    dbg!(&new_env_resource.get_coordinates());
-    dbg!(&new_env_resource);
-}
 #[test]
 fn recharge_features() {
-    let new_world = World::new(1000, 500, 100, 1, 1, 1, 0);
+    let new_world = World::new(1000, 500, 100, 1, 200, 1, 1, 0);
     let mut zeus = SpaceShip::new("Zeus", &new_world);
     let mut ada = MotherShip::new("Ada", &new_world);
     ada.display_resources();

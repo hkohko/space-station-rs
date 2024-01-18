@@ -82,7 +82,9 @@ pub trait TransferResources {
         false
     }
     /// Implementation WIP
-    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
+    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) -> GameWarning {
+        GameWarning::Nominal
+    }
 }
 /// Shared trait for ships that can move.
 pub trait Move {
@@ -131,6 +133,14 @@ impl LevelCap for Storage {
         self.oxygen = Oxygen(std::cmp::max(self.oxygen.0, 0));
         self.fuel = Fuel(std::cmp::max(self.fuel.0, 0));
     }
+}
+pub enum GameWarning {
+    ShipStorageFull,
+    OutOfBounds,
+    Unreachable,
+    ResourceExhausted,
+    Nominal,
+    
 }
 /// Command enums for user input.
 pub enum Commands {
