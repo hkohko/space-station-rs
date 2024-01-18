@@ -66,58 +66,44 @@ impl<'a> MotherShip<'a> {
     }
 }
 impl<'a> TransferResources for MotherShip<'a> {
-    fn give_resources(&mut self, rsc: Resources, spc_current_level: i32) -> bool {
+    fn give_resources(&mut self, rsc: ResourceKind, spc_current_level: i32) -> bool {
         let rate = self.world_parameters.consumption_rate;
         if spc_current_level == 100 {
             return false;
         }
         match rsc {
-            Resources::FoodWater(_) => {
-                if let Resources::Oxygen(val) = self.resource.consumable {
-                    self.resource.consumable = Resources::Oxygen(val - rate);
-                    return true;
-                }
+            ResourceKind::FoodWater(_) => {
+            self.resource.consumable = FoodWater(self.resource.consumable.0 - rate);
+            return true;
+                
             }
-            Resources::Oxygen(_) => {
-                if let Resources::Oxygen(val) = self.resource.oxygen {
-                    self.resource.oxygen = Resources::Oxygen(val - rate);
-                    return true;
-                }
+            ResourceKind::Oxygen(_) => {
+                self.resource.oxygen = Oxygen(self.resource.oxygen.0 - rate);
+                return true;
+                
             }
-            Resources::Fuel(_) => {
-                if let Resources::Fuel(val) = self.resource.fuel {
-                    self.resource.fuel = Resources::Fuel(val - rate);
-                    return true;
-                }
+            ResourceKind::Fuel(_) => {
+                self.resource.fuel = Fuel(self.resource.fuel.0 - rate);
+                return true;
             }
         }
-        false
     }
-    fn receive_to_storage(&mut self, _rsc: Resources) -> bool {
+    fn receive_to_storage(&mut self, _rsc: ResourceKind) -> bool {
         let rate = self.world_parameters.recharge_rate;
         match _rsc {
-            Resources::FoodWater(_) => {
-                let initial_consumable_level = match self.storage.consumable {
-                    Resources::FoodWater(val) => val,
-                    _ => 0,
-                };
-                self.storage.consumable = Resources::FoodWater(initial_consumable_level + rate);
+            ResourceKind::FoodWater(_) => {
+                let initial_consumable_level = self.storage.consumable.0;
+                self.storage.consumable = FoodWater(initial_consumable_level + rate);
                 true
             }
-            Resources::Oxygen(_) => {
-                let initial_oxygen_level = match self.storage.oxygen {
-                    Resources::Oxygen(val) => val,
-                    _ => 0,
-                };
-                self.storage.oxygen = Resources::Oxygen(initial_oxygen_level + rate);
+            ResourceKind::Oxygen(_) => {
+                let initial_oxygen_level = self.storage.oxygen.0;
+                self.storage.oxygen = Oxygen(initial_oxygen_level + rate);
                 true
             }
-            Resources::Fuel(_) => {
-                let initial_fuel_level = match self.storage.fuel {
-                    Resources::Fuel(val) => val,
-                    _ => 0,
-                };
-                self.storage.fuel = Resources::Fuel(initial_fuel_level + rate);
+            ResourceKind::Fuel(_) => {
+                let initial_fuel_level = self.storage.fuel.0;
+                self.storage.fuel = Fuel(initial_fuel_level + rate);
                 true
             }
         }
@@ -138,43 +124,25 @@ impl<'a> GenericInfo for MotherShip<'a> {
         println!("--Mothership Status--\nName: {}\nLocation: {loc_x}, {loc_y}\nDock Status: {mtr_ship_dock_msg}\nRecharge Status: {mtr_ship_rchrg_msg}", self.name);
     }
     fn display_resources(&self) {
-        let consumables = {
-            if let Resources::Oxygen(val) = self.resource.consumable {
-                val
-            } else {
-                0
-            }
-        };
-        let oxygen = {
-            if let Resources::Oxygen(val) = self.resource.oxygen {
-                val
-            } else {
-                0
-            }
-        };
-        let fuel = {
-            if let Resources::Fuel(val) = self.resource.fuel {
-                val
-            } else {
-                0
-            }
-        };
+        let consumables = self.resource.consumable.0;
+        let oxygen = self.resource.oxygen.0;
+        let fuel = self.resource.fuel.0;
         println!("--Mothership '{}' Resources--\nConsumables: {consumables}\nOxygen: {oxygen}\nFuel: {fuel}", self.name)
     }
 }
 #[derive(Debug)]
 /// Struct for mothershp resources.
 struct MotherShipResource {
-    consumable: Resources,
-    oxygen: Resources,
-    fuel: Resources,
+    consumable: FoodWater,
+    oxygen: Oxygen,
+    fuel: Fuel,
 }
 impl MotherShipResource {
     fn new(amount: i32) -> MotherShipResource {
         MotherShipResource {
-            consumable: Resources::Oxygen(amount),
-            oxygen: Resources::Oxygen(amount),
-            fuel: Resources::Fuel(amount),
+            consumable: FoodWater(amount),
+            oxygen: Oxygen(amount),
+            fuel: Fuel(amount),
         }
     }
 }
