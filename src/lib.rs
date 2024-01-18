@@ -323,6 +323,9 @@ impl Coordinates {
             world_size: w_size,
         }
     }
+    pub fn get_values(&self) -> (i32, i32){
+        (self.x, self.y)
+    }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
         let (min, max) = self.world_size.get_values();
@@ -352,7 +355,6 @@ impl Coordinates {
         let side_a = from.x - self.x;
         let side_b = from.y - self.y;
         let dest = f64::from(side_a.pow(2) + side_b.pow(2));
-
         dest.sqrt().floor()
     }
 }

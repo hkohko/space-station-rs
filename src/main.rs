@@ -33,6 +33,7 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
 fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
     let mut x = 0;
     let mut y = 0;
+    let space_ship_coordinate = spc_ship.get_coordinates();
     println!("\nCurrent location: {:?}", spc_ship.get_coordinates());
     let cmd = get_input("Move to: ");
     let split_by_comma = cmd.split(',').collect::<Vec<&str>>();
