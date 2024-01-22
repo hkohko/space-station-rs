@@ -13,8 +13,8 @@ Inspired by [No Boilerplate's](https://www.youtube.com/@NoBoilerplate) video on 
 # MVP Target  
 A plain TUI game that implements these features:
 - [x] Creates a world with customizable parameters.
-- [x] Creates a mothership with custom name.
-- [x] Creates a spaceship with custom name.
+- [x] Creates a mothership capable of giving and receiving resources.
+- [x] Creates a spaceship capable of moving to a specific coordinate while taking fuel into consideration, mine floating resources, and storing them into motherships.
 ## MVP Specifics
 ### Mothership
 - [ ] Mothership that is able to give and receive resources from spaceships
@@ -26,7 +26,7 @@ A plain TUI game that implements these features:
 - [x] A spaceship that can be recharged at a mothership/any game object is able to transfer resource.
 - [x] A spaceship that is able to mine environment resource and store them in a storage of some form.
 - [x] A spaceship that is able to 'ping' and in return gets a list of resources that is not too far away from it.
-- [ ] Set a cap to how much resource can be stored before it has to be offloaded to a mothership.
+- [x] Set a cap to how much resource can be stored before it has to be offloaded to a mothership.
 ### Environment resources
 - [x] Spawn resources in a world, be it determined or randomized.
 - [x] Able to transfer its resource to a spaceship.
