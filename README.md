@@ -17,9 +17,9 @@ A plain TUI game that implements these features:
 - [x] Creates a spaceship capable of moving to a specific coordinate while taking fuel into consideration, mine floating resources, and storing them into motherships.
 ## MVP Specifics
 ### Mothership
-- [ ] Mothership that is able to give and receive resources from spaceships
+- [x] Mothership that is able to give and receive resources from spaceships
   - [x] Give
-  - [ ] Receive
+  - [x] Receive
 ### Spaceship
 - [x] A spaceship that moves to a coordinate, while taking into account its remaining fuel.
 - [ ] A spaceship that is able to convert environment resource in its storage into fuel, if it ran out of fuel.
