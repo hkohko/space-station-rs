@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
 
 use crate::prelude::*;
 use rand::{self, Rng};
@@ -6,11 +6,13 @@ use rand::{self, Rng};
 /// Struct for a World. Every game must have a world.
 pub struct World {
     /// Resources inside a world.
-    pub spawned_resources: Rc<Vec<RefCell<EnvResource>>>,
+    pub spawned_resources: Vec<RefCell<EnvResource>>,
     /// Set consumption rate of ships.
     pub consumption_rate: i32,
     /// Set how fast a recharge should go.
     pub recharge_interval: i32,
+    /// How much storage a spaceship can hold.
+    pub spaceship_storage_cap: i32,
     /// Set how much a game object is recharge per unit of time.
     pub recharge_rate: i32,
     /// Global game ticks.
@@ -25,6 +27,7 @@ impl World {
         spawn_amount_of_resources: usize,
         resource_max_cap: i32,
         world_consumption_rate: i32,
+        spcshp_cap: i32,
         tick: u8,
         world_recharge_rate: i32,
         world_recharge_interval: i32,
@@ -32,28 +35,30 @@ impl World {
         let area = WorldSize::new(play_area);
         World {
             // problem: Coordinates inside envresource
-            spawned_resources: Rc::new(EnvResource::randomize_world_resources(
+            spawned_resources: EnvResource::randomize_world_resources(
                 spawn_amount_of_resources,
                 resource_max_cap,
                 area,
-            )),
+            ),
             consumption_rate: world_consumption_rate,
             game_tick: tick,
             recharge_rate: world_recharge_rate,
             play_area: area,
             recharge_interval: world_recharge_interval,
+            spaceship_storage_cap: spcshp_cap
         }
     }
     /// Create a new World with randomized values.
     pub fn randomize(area: WorldSize) -> World {
         let mut rng = rand::thread_rng();
         World {
-            spawned_resources: Rc::new(EnvResource::randomize_world_resources(100, 100, area)),
+            spawned_resources: EnvResource::randomize_world_resources(100, 100, area),
             consumption_rate: 1,
             recharge_rate: 1,
             game_tick: rng.gen_range(1..5),
             play_area: area,
             recharge_interval: rng.gen_range(100..500),
+            spaceship_storage_cap: rng.gen_range(50..=200),
         }
     }
 }

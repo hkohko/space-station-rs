@@ -8,7 +8,7 @@
 //!
 
 use environment_resources::EnvResource;
-use prelude::WorldSize;
+use prelude::{MotherShip, WorldSize};
 use rand::{self, Rng};
 /// Structs, Enums, and methods for free-flying resources.
 pub mod environment_resources;
@@ -29,7 +29,7 @@ pub mod world;
 /// Shared trait for generic information of a ship.
 pub trait GetResourceLevels {
     /// Returns the amount of resources available in a resource object.
-    fn get_resource_amount(&self, _rsc: Resources) -> i32 {
+    fn get_resource_amount(&self, _rsc: ResourceKind) -> i32 {
         0
     }
 }
@@ -57,9 +57,9 @@ pub trait TransferResources {
     /// # use space_station::prelude::*;
     /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
-    /// ada.give_resources(Resources::FoodWater(1), 100);
+    /// ada.give_resources(ResourceKind::FoodWater(1), 100);
     /// ```
-    fn give_resources(&mut self, _rsc: Resources, _current_level: i32) -> bool {
+    fn give_resources(&mut self, _rsc: ResourceKind, _current_level: i32) -> bool {
         true
     }
     /// Receive resources to a ship.
@@ -70,17 +70,22 @@ pub trait TransferResources {
     /// # let World = World::randomize(WorldSize::new(100));
     /// let mut ada = MotherShip::new("Ada", &World);
     /// let mut zeus = SpaceShip::new("Zeus", & World);
-    /// zeus.receive_resources(Resources::FoodWater(20), &mut ada);
+    /// zeus.receive_resources(ResourceKind::FoodWater(20), &mut ada);
     /// ```
-    fn receive_resources<T>(&mut self, _rsc: Resources, _mtr_shp: &mut T)
+    fn receive_resources<T>(&mut self, _rsc: ResourceKind, _mtr_shp: &mut T)
     where
         T: TransferResources,
     {
     }
     /// Store environment resources inside the resource storage of a ship.
-    fn receive_to_storage(&mut self, _rsc: Resources) {}
+    fn receive_to_storage(&mut self, _rsc: ResourceKind) -> bool {
+        false
+    }
     /// Implementation WIP
-    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) {}
+    fn get_env_resources(&mut self, _env_resource: &mut EnvResource) -> GameWarning {
+        GameWarning::Nominal
+    }
+    fn offload_storage(&mut self, _target: &mut MotherShip) {}
 }
 /// Shared trait for ships that can move.
 pub trait Move {
@@ -88,75 +93,72 @@ pub trait Move {
     fn to_location(&mut self, _to: Coordinates) -> bool {
         false
     }
+    /// Teleports a ship to a mothership. Consuming no fuel in the process.
+    fn teleport(&mut self, _mtr_ship: &MotherShip) {}
 }
 /// Struct for storage, a way for ships to store resources mined from the environment.
 #[derive(Debug, Clone, Copy)]
 pub struct Storage {
-    consumable: Resources,
-    oxygen: Resources,
-    fuel: Resources,
+    consumable: FoodWater,
+    oxygen: Oxygen,
+    fuel: Fuel,
 }
 impl Storage {
     /// Creates a new Storage with customized starting values.
     pub fn new(amount: i32) -> Storage {
         Storage {
-            consumable: Resources::FoodWater(amount),
-            oxygen: Resources::Oxygen(amount),
-            fuel: Resources::Fuel(amount),
+            consumable: FoodWater::new(amount),
+            oxygen: Oxygen(amount),
+            fuel: Fuel(amount),
         }
     }
 }
 impl GetResourceLevels for Storage {
-    fn get_resource_amount(&self, rsc: Resources) -> i32 {
+    fn get_resource_amount(&self, rsc: ResourceKind) -> i32 {
         match rsc {
-            Resources::Fuel(_) => {
-                if let Resources::Fuel(val) = self.fuel {
-                    val
-                } else {
-                    0
-                }
+            ResourceKind::Fuel(_) => {
+                self.fuel.0
             }
-            Resources::Oxygen(_) => {
-                if let Resources::Oxygen(val) = self.oxygen {
-                    val
-                } else {
-                    0
-                }
+            ResourceKind::Oxygen(_) => {
+                self.oxygen.0
             }
-            Resources::FoodWater(_) => {
-                if let Resources::Oxygen(val) = self.consumable {
-                    val
-                } else {
-                    0
-                }
+            ResourceKind::FoodWater(_) => {
+                self.consumable.0
             }
         }
     }
 }
 impl LevelCap for Storage {
     fn adjust_min_level(&mut self) {
-        let current_levels = [self.consumable, self.oxygen, self.fuel];
-        for res in current_levels.into_iter() {
-            match res {
-                Resources::FoodWater(val) => {
-                    self.consumable = Resources::Oxygen(std::cmp::max(val, 0));
-                }
-                Resources::Oxygen(val) => {
-                    self.oxygen = Resources::Oxygen(std::cmp::max(val, 0));
-                }
-                Resources::Fuel(val) => {
-                    self.fuel = Resources::Fuel(std::cmp::max(val, 0));
-                }
-            }
-        }
+        self.consumable = FoodWater(std::cmp::max(self.consumable.0, 0));
+        self.oxygen = Oxygen(std::cmp::max(self.oxygen.0, 0));
+        self.fuel = Fuel(std::cmp::max(self.fuel.0, 0));
     }
 }
+pub enum GameWarning {
+    ShipStorageFull,
+    OutOfBounds,
+    Unreachable,
+    ResourceExhausted,
+    Nominal,
+}
+/// Command enums for user input.
 pub enum Commands {
+    /// Move command.
     MoveTo,
+    /// Mine environmental resources.
     Mine,
+    /// Recharge a ship by teleporting to a mothership.
     Recharge,
+    /// Show a space ship's info.
     SpaceShipInfo,
+    /// Show a mother ship's info.
+    MotherShipInfo,
+    /// Show resources within a certain distance of the ship.
     Ping,
+    /// Offload storage to a mothership.
+    Offload, 
+    /// Default enum if no commands are given. Should do nothing.
     Empty,
 }
 /// Spaceship docking enums.
@@ -183,9 +185,57 @@ pub enum MotherShipDockStatus {
     /// Mothership docking area is empty.
     Empty,
 }
+#[derive(Debug, Clone, Copy)]
+pub struct Oxygen(i32);
+impl Oxygen {
+    pub fn new(amount: i32) -> Oxygen{
+        Oxygen(amount)
+    }
+    pub fn randomize(max: i32) -> Oxygen {
+        let mut rng = rand::thread_rng();
+        Oxygen(rng.gen_range(5..=max))
+    }
+}
+impl LevelCap for Oxygen {
+    fn adjust_max_level(&mut self) {
+        self.0 = std::cmp::min(self.0, 100);
+    }
+}
+#[derive(Debug, Clone, Copy)]
+pub struct FoodWater(i32);
+impl FoodWater {
+    pub fn new(amount: i32) -> FoodWater {
+        FoodWater(amount)
+    }
+    pub fn randomize(max: i32) -> FoodWater {
+        let mut rng = rand::thread_rng();
+        FoodWater(rng.gen_range(5..=max))
+    }
+}
+impl LevelCap for FoodWater {
+    fn adjust_max_level(&mut self) {
+        self.0 = std::cmp::min(self.0, 100)
+    }
+}
+#[derive(Debug, Clone, Copy)]
+pub struct Fuel(i32);
+impl Fuel {
+    pub fn new(amount: i32) -> Fuel {
+        Fuel(amount)
+    }
+    pub fn randomize(max: i32) -> Fuel {
+        let mut rng = rand::thread_rng();
+        Fuel(rng.gen_range(5..=max))
+    }
+}
+impl LevelCap for Fuel {
+    fn adjust_max_level(&mut self) {
+        self.0 = std::cmp::min(self.0, 100);
+    }
+}
 /// The main resources of the game.
 #[derive(Debug, Clone, Copy)]
-pub enum Resources {
+pub enum ResourceKind {
     /// Consumables.
     FoodWater(i32),
     /// Breathable air.
@@ -193,21 +243,21 @@ pub enum Resources {
     /// Rocket fuel.
     Fuel(i32),
 }
-impl Resources {
+impl ResourceKind {
     /// Generate a resource with randomized variant and amount.
-    pub fn randomize(max: i32) -> Resources {
+    pub fn randomize(max: i32) -> ResourceKind {
         let mut rng = rand::thread_rng();
         let val = rng.gen_range(0..=2);
         let range = 5..=max;
         match val {
-            0 => Resources::FoodWater(rng.gen_range(range)),
-            1 => Resources::Oxygen(rng.gen_range(range)),
-            2 => Resources::Fuel(rng.gen_range(range)),
-            _ => Resources::Fuel(rng.gen_range(range)),
+            0 => ResourceKind::FoodWater(rng.gen_range(range)),
+            1 => ResourceKind::Oxygen(rng.gen_range(range)),
+            2 => ResourceKind::Fuel(rng.gen_range(range)),
+            _ => ResourceKind::Fuel(rng.gen_range(range)),
         }
     }
 }
-impl LevelCap for Resources {
+impl LevelCap for ResourceKind {
     fn adjust_max_level(&mut self) {
         match self {
             Self::FoodWater(val) => {
@@ -275,6 +325,9 @@ impl Coordinates {
             world_size: w_size,
         }
     }
+    pub fn get_values(&self) -> (i32, i32){
+        (self.x, self.y)
+    }
     fn max_bounds(&self) -> bool {
         let mut is_valid = true;
         let (min, max) = self.world_size.get_values();
@@ -304,7 +357,6 @@ impl Coordinates {
         let side_a = from.x - self.x;
         let side_b = from.y - self.y;
         let dest = f64::from(side_a.pow(2) + side_b.pow(2));
-        let sqrt = dest.sqrt().floor();
-        sqrt
+        dest.sqrt().floor()
     }
 }

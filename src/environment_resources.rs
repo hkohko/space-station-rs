@@ -4,7 +4,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Copy)]
 /// Struct for resources available in the environment.
 pub struct EnvResource {
-    kind: Resources,
+    kind: ResourceKind,
     coordinates: Coordinates,
     id: i32,
 }
@@ -12,13 +12,13 @@ impl EnvResource {
     /// Spawn resources with randomized values.
     pub fn randomize(at_most: i32, id_num: i32, play_area: WorldSize) -> EnvResource {
         EnvResource {
-            kind: Resources::randomize(at_most),
+            kind: ResourceKind::randomize(at_most),
             coordinates: Coordinates::randomize(play_area),
             id: id_num,
         }
     }
     /// Returns the resource's kind.
-    pub fn get_kind(&self) -> Resources {
+    pub fn get_kind(&self) -> ResourceKind {
         self.kind
     }
     /// Returns the resource's coordinates.
@@ -45,18 +45,20 @@ impl EnvResource {
             }
         };
         for num in 0..=amount_as_i32 {
-            rsc_vec.push(RefCell::new(EnvResource::randomize(at_most, num, play_area)))
+            rsc_vec.push(RefCell::new(EnvResource::randomize(
+                at_most, num, play_area,
+            )))
         }
         rsc_vec
     }
 }
 impl TransferResources for EnvResource {
-    fn give_resources(&mut self, _rsc: Resources, _: i32) -> bool {
+    fn give_resources(&mut self, _rsc: ResourceKind, _: i32) -> bool {
         match self.get_kind() {
-            Resources::FoodWater(val) => {
-                if let Resources::FoodWater(rate) = _rsc {
+            ResourceKind::FoodWater(val) => {
+                if let ResourceKind::FoodWater(rate) = _rsc {
                     if val - rate != -1 {
-                        self.kind = Resources::FoodWater(val - rate);
+                        self.kind = ResourceKind::FoodWater(val - rate);
                         true
                     } else {
                         false
@@ -65,10 +67,10 @@ impl TransferResources for EnvResource {
                     true
                 }
             }
-            Resources::Oxygen(val) => {
-                if let Resources::Oxygen(rate) = _rsc {
+            ResourceKind::Oxygen(val) => {
+                if let ResourceKind::Oxygen(rate) = _rsc {
                     if val - rate != -1 {
-                        self.kind = Resources::Oxygen(val - rate);
+                        self.kind = ResourceKind::Oxygen(val - rate);
                         true
                     } else {
                         false
@@ -77,10 +79,10 @@ impl TransferResources for EnvResource {
                     true
                 }
             }
-            Resources::Fuel(val) => {
-                if let Resources::Fuel(rate) = _rsc {
+            ResourceKind::Fuel(val) => {
+                if let ResourceKind::Fuel(rate) = _rsc {
                     if val - rate != -1 {
-                        self.kind = Resources::Fuel(val - rate);
+                        self.kind = ResourceKind::Fuel(val - rate);
                         true
                     } else {
                         false
