@@ -85,6 +85,7 @@ pub trait TransferResources {
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) -> GameWarning {
         GameWarning::Nominal
     }
+    fn offload_storage(&mut self, _target: &mut MotherShip) {}
 }
 /// Shared trait for ships that can move.
 pub trait Move {

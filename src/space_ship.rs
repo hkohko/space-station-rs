@@ -294,6 +294,19 @@ impl<'a> TransferResources for SpaceShip<'a> {
             }
         }
     }
+    fn offload_storage(&mut self, target: &mut MotherShip) {
+        let distance = self.get_coordinates().get_distance(target.get_coordinates());
+        if distance > 5.0 {
+            println!("You're too far from mother ship to offload storage!");
+            return 
+        }
+        let look_for_max = [self.storage.consumable.0, self.storage.oxygen.0, self.storage.fuel.0];
+        let max = look_for_max.into_iter().max();
+        if let Some(val) = max {
+            todo!()
+        }
+        
+    }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
     fn display_info(&self) {
