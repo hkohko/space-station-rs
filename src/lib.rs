@@ -116,15 +116,9 @@ impl Storage {
 impl GetResourceLevels for Storage {
     fn get_resource_amount(&self, rsc: ResourceKind) -> i32 {
         match rsc {
-            ResourceKind::Fuel(_) => {
-                self.fuel.0
-            }
-            ResourceKind::Oxygen(_) => {
-                self.oxygen.0
-            }
-            ResourceKind::FoodWater(_) => {
-                self.consumable.0
-            }
+            ResourceKind::Fuel(_) => self.fuel.0,
+            ResourceKind::Oxygen(_) => self.oxygen.0,
+            ResourceKind::FoodWater(_) => self.consumable.0,
         }
     }
 }
@@ -157,7 +151,7 @@ pub enum Commands {
     /// Show resources within a certain distance of the ship.
     Ping,
     /// Offload storage to a mothership.
-    Offload, 
+    Offload,
     /// Default enum if no commands are given. Should do nothing.
     Empty,
 }
@@ -188,7 +182,7 @@ pub enum MotherShipDockStatus {
 #[derive(Debug, Clone, Copy)]
 pub struct Oxygen(i32);
 impl Oxygen {
-    pub fn new(amount: i32) -> Oxygen{
+    pub fn new(amount: i32) -> Oxygen {
         Oxygen(amount)
     }
     pub fn randomize(max: i32) -> Oxygen {
@@ -325,7 +319,7 @@ impl Coordinates {
             world_size: w_size,
         }
     }
-    pub fn get_values(&self) -> (i32, i32){
+    pub fn get_values(&self) -> (i32, i32) {
         (self.x, self.y)
     }
     fn max_bounds(&self) -> bool {

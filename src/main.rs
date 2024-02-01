@@ -10,7 +10,9 @@ fn main() {
 fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
     let mut mtr_ship = MotherShip::new(spc_ship_name.as_str(), &world);
     let mut spc_ship = SpaceShip::new(mtr_ship_name.as_str(), &world);
-    let list_of_commands = vec!["move", "mine", "recharge", "sinfo", "minfo" ,"ping", "offload"];
+    let list_of_commands = vec![
+        "move", "mine", "recharge", "sinfo", "minfo", "ping", "offload",
+    ];
 
     loop {
         println!();
@@ -98,7 +100,6 @@ fn handle_minfo(mtr_ship: &MotherShip) {
     println!();
     mtr_ship.display_storage();
     println!();
-    
 }
 fn handle_sinfo(spc_ship: &SpaceShip) {
     println!();

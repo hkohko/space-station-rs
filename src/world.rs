@@ -45,7 +45,7 @@ impl World {
             recharge_rate: world_recharge_rate,
             play_area: area,
             recharge_interval: world_recharge_interval,
-            spaceship_storage_cap: spcshp_cap
+            spaceship_storage_cap: spcshp_cap,
         }
     }
     /// Create a new World with randomized values.

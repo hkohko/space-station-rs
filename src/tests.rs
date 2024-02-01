@@ -12,56 +12,58 @@ fn transfer_storage() {
     match status_env1 {
         GameWarning::Nominal => (),
         GameWarning::Unreachable => {
-            assert!(new_ship.get_coordinates().get_distance(env_1.get_coordinates()) > 5.0);
+            assert!(
+                new_ship
+                    .get_coordinates()
+                    .get_distance(env_1.get_coordinates())
+                    > 5.0
+            );
+        }
+        GameWarning::ShipStorageFull => match env_1.get_kind() {
+            ResourceKind::Oxygen(val) => {
+                assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
+            }
+            ResourceKind::Fuel(val) => {
+                assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
+            }
+            ResourceKind::FoodWater(val) => {
+                assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
+            }
         },
-        GameWarning::ShipStorageFull => {
-            match env_1.get_kind() {
-                ResourceKind::Oxygen(val) => {
-                    assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
-                }
-                ResourceKind::Fuel(val) => {
-                    assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
-                }
-                ResourceKind::FoodWater(val) => {
-                    assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
-                }
-            }
-        }
-        GameWarning::ResourceExhausted => {
-            match env_1.get_kind() {
-                ResourceKind::FoodWater(val) => assert_eq!(val, 0),
-                ResourceKind::Oxygen(val) => assert_eq!(val, 0),
-                ResourceKind::Fuel(val) => assert_eq!(val, 0),
-            }
-        }
-        _ => ()
+        GameWarning::ResourceExhausted => match env_1.get_kind() {
+            ResourceKind::FoodWater(val) => assert_eq!(val, 0),
+            ResourceKind::Oxygen(val) => assert_eq!(val, 0),
+            ResourceKind::Fuel(val) => assert_eq!(val, 0),
+        },
+        _ => (),
     }
     match status_env2 {
         GameWarning::Nominal => (),
         GameWarning::Unreachable => {
-            assert!(new_ship.get_coordinates().get_distance(env_1.get_coordinates()) > 5.0);
+            assert!(
+                new_ship
+                    .get_coordinates()
+                    .get_distance(env_1.get_coordinates())
+                    > 5.0
+            );
+        }
+        GameWarning::ShipStorageFull => match env_2.get_kind() {
+            ResourceKind::Oxygen(val) => {
+                assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
+            }
+            ResourceKind::Fuel(val) => {
+                assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
+            }
+            ResourceKind::FoodWater(val) => {
+                assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
+            }
         },
-        GameWarning::ShipStorageFull => {
-            match env_2.get_kind() {
-                ResourceKind::Oxygen(val) => {
-                    assert!(new_ship.get_storage().oxygen.0 + val > new_world.spaceship_storage_cap)
-                }
-                ResourceKind::Fuel(val) => {
-                    assert!(new_ship.get_storage().fuel.0 + val > new_world.spaceship_storage_cap)
-                }
-                ResourceKind::FoodWater(val) => {
-                    assert!(new_ship.get_storage().consumable.0 + val > new_world.spaceship_storage_cap)
-                }
-            }
-        }
-        GameWarning::ResourceExhausted => {
-            match env_2.get_kind() {
-                ResourceKind::FoodWater(val) => assert_eq!(val, 0),
-                ResourceKind::Oxygen(val) => assert_eq!(val, 0),
-                ResourceKind::Fuel(val) => assert_eq!(val, 0),
-            }
-        }
-        _ => ()
+        GameWarning::ResourceExhausted => match env_2.get_kind() {
+            ResourceKind::FoodWater(val) => assert_eq!(val, 0),
+            ResourceKind::Oxygen(val) => assert_eq!(val, 0),
+            ResourceKind::Fuel(val) => assert_eq!(val, 0),
+        },
+        _ => (),
     }
 }
 #[test]

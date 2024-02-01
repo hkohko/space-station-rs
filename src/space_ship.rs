@@ -46,7 +46,10 @@ impl<'a> SpaceShip<'a> {
         for _ in *min..100 {
             self.receive_resources(ResourceKind::Fuel(recharge_amount_world_param), mtr_shp);
             self.receive_resources(ResourceKind::Oxygen(recharge_amount_world_param), mtr_shp);
-            self.receive_resources(ResourceKind::FoodWater(recharge_amount_world_param), mtr_shp);
+            self.receive_resources(
+                ResourceKind::FoodWater(recharge_amount_world_param),
+                mtr_shp,
+            );
             sleep(Duration::from_millis(recharge_ms));
         }
     }
@@ -192,7 +195,8 @@ impl<'a> TransferResources for SpaceShip<'a> {
             }
             ResourceKind::Fuel(_) => {
                 let initial_fuel_level = self.fuel.0;
-                let still_available = source.give_resources(ResourceKind::Fuel(0), initial_fuel_level);
+                let still_available =
+                    source.give_resources(ResourceKind::Fuel(0), initial_fuel_level);
                 if still_available {
                     self.fuel = Fuel(initial_fuel_level + rate);
                     self.fuel.adjust_max_level();
@@ -206,7 +210,7 @@ impl<'a> TransferResources for SpaceShip<'a> {
             ResourceKind::FoodWater(rate) => {
                 if self.storage.consumable.0 == max_cap {
                     println!("FoodWater storage is full!");
-                    return true
+                    return true;
                 }
                 self.storage.consumable = FoodWater(self.storage.consumable.0 + rate);
                 false
@@ -214,7 +218,7 @@ impl<'a> TransferResources for SpaceShip<'a> {
             ResourceKind::Oxygen(rate) => {
                 if self.storage.oxygen.0 == max_cap {
                     println!("Oxygen storage is full!");
-                    return true
+                    return true;
                 }
                 self.storage.oxygen = Oxygen(self.storage.oxygen.0 + rate);
                 false
@@ -222,7 +226,7 @@ impl<'a> TransferResources for SpaceShip<'a> {
             ResourceKind::Fuel(rate) => {
                 if self.storage.fuel.0 == max_cap {
                     println!("Fuel storage is full!");
-                    return true
+                    return true;
                 }
                 self.storage.fuel = Fuel(self.storage.fuel.0 + rate);
                 false
@@ -232,7 +236,7 @@ impl<'a> TransferResources for SpaceShip<'a> {
     fn get_env_resources(&mut self, _env_resource: &mut EnvResource) -> GameWarning {
         if !(self.location.get_distance(_env_resource.get_coordinates()) < 5.0) {
             println!("You are too far from the target resource");
-            return GameWarning::Unreachable
+            return GameWarning::Unreachable;
         }
         let recharge_rate = self.world_parameters.recharge_rate;
         let consumption_rate = self.world_parameters.consumption_rate;
@@ -241,17 +245,18 @@ impl<'a> TransferResources for SpaceShip<'a> {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::FoodWater(0));
                     if check_full {
-                        return GameWarning::ShipStorageFull
+                        return GameWarning::ShipStorageFull;
                     }
-                    let rsc_still_available =
-                        _env_resource.give_resources(ResourceKind::FoodWater(consumption_rate), val);
+                    let rsc_still_available = _env_resource
+                        .give_resources(ResourceKind::FoodWater(consumption_rate), val);
                     if rsc_still_available {
-                        let is_full = self.receive_to_storage(ResourceKind::FoodWater(recharge_rate));
+                        let is_full =
+                            self.receive_to_storage(ResourceKind::FoodWater(recharge_rate));
                         if is_full {
-                            return GameWarning::ShipStorageFull
+                            return GameWarning::ShipStorageFull;
                         }
                     } else {
-                        return GameWarning::ResourceExhausted
+                        return GameWarning::ResourceExhausted;
                     }
                 }
                 GameWarning::Nominal
@@ -260,16 +265,17 @@ impl<'a> TransferResources for SpaceShip<'a> {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::Oxygen(0));
                     if check_full {
-                        return GameWarning::ShipStorageFull
+                        return GameWarning::ShipStorageFull;
                     }
-                    let still_available = _env_resource.give_resources(ResourceKind::Oxygen(consumption_rate), val);
+                    let still_available =
+                        _env_resource.give_resources(ResourceKind::Oxygen(consumption_rate), val);
                     if still_available {
                         let is_full = self.receive_to_storage(ResourceKind::Oxygen(recharge_rate));
-                        if is_full {                   
-                            return GameWarning::ShipStorageFull
+                        if is_full {
+                            return GameWarning::ShipStorageFull;
                         }
                     } else {
-                        return GameWarning::ResourceExhausted
+                        return GameWarning::ResourceExhausted;
                     }
                 }
                 GameWarning::Nominal
@@ -278,16 +284,17 @@ impl<'a> TransferResources for SpaceShip<'a> {
                 for _ in 0..=val {
                     let check_full = self.receive_to_storage(ResourceKind::Fuel(0));
                     if check_full {
-                        return GameWarning::ShipStorageFull
+                        return GameWarning::ShipStorageFull;
                     }
-                    let still_available = _env_resource.give_resources(ResourceKind::Fuel(consumption_rate), val);
+                    let still_available =
+                        _env_resource.give_resources(ResourceKind::Fuel(consumption_rate), val);
                     if still_available {
                         let is_full = self.receive_to_storage(ResourceKind::Fuel(recharge_rate));
-                        if is_full {                 
-                            return GameWarning::ShipStorageFull
+                        if is_full {
+                            return GameWarning::ShipStorageFull;
                         }
                     } else {
-                        return GameWarning::ResourceExhausted
+                        return GameWarning::ResourceExhausted;
                     }
                 }
                 GameWarning::Nominal
@@ -295,30 +302,34 @@ impl<'a> TransferResources for SpaceShip<'a> {
         }
     }
     fn offload_storage(&mut self, target: &mut MotherShip) {
-        let distance = self.get_coordinates().get_distance(target.get_coordinates());
+        let distance = self
+            .get_coordinates()
+            .get_distance(target.get_coordinates());
         if distance > 5.0 {
             println!("You're too far from mother ship to offload storage!");
-            return 
+            return;
         }
         if self.storage.consumable.0 > 0 {
             for _ in 0..self.storage.consumable.0 {
-                self.storage.consumable = FoodWater::new(self.storage.consumable.0 - self.world_parameters.recharge_rate);
+                self.storage.consumable =
+                    FoodWater::new(self.storage.consumable.0 - self.world_parameters.recharge_rate);
                 target.receive_to_storage(ResourceKind::FoodWater(0));
             }
         }
         if self.storage.oxygen.0 > 0 {
             for _ in 0..self.storage.oxygen.0 {
-                self.storage.oxygen = Oxygen::new(self.storage.oxygen.0 - self.world_parameters.recharge_rate);
+                self.storage.oxygen =
+                    Oxygen::new(self.storage.oxygen.0 - self.world_parameters.recharge_rate);
                 target.receive_to_storage(ResourceKind::Oxygen(0));
             }
         }
         if self.storage.fuel.0 > 0 {
             for _ in 0..self.storage.fuel.0 {
-                self.storage.fuel = Fuel::new(self.storage.fuel.0 - self.world_parameters.recharge_rate);
+                self.storage.fuel =
+                    Fuel::new(self.storage.fuel.0 - self.world_parameters.recharge_rate);
                 target.receive_to_storage(ResourceKind::Fuel(0));
             }
         }
-        
     }
 }
 impl<'a> GenericInfo for SpaceShip<'a> {
@@ -385,15 +396,9 @@ impl<'a> Move for SpaceShip<'a> {
 impl<'a> GetResourceLevels for SpaceShip<'a> {
     fn get_resource_amount(&self, rsc: ResourceKind) -> i32 {
         match rsc {
-            ResourceKind::Fuel(_) => {
-                self.fuel.0
-            }
-            ResourceKind::Oxygen(_) => {
-                self.oxygen.0
-            }
-            ResourceKind::FoodWater(_) => {
-                self.consumable.0
-            }
+            ResourceKind::Fuel(_) => self.fuel.0,
+            ResourceKind::Oxygen(_) => self.oxygen.0,
+            ResourceKind::FoodWater(_) => self.consumable.0,
         }
     }
 }

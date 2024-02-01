@@ -73,14 +73,12 @@ impl<'a> TransferResources for MotherShip<'a> {
         }
         match rsc {
             ResourceKind::FoodWater(_) => {
-            self.resource.consumable = FoodWater(self.resource.consumable.0 - rate);
-            return true;
-                
+                self.resource.consumable = FoodWater(self.resource.consumable.0 - rate);
+                return true;
             }
             ResourceKind::Oxygen(_) => {
                 self.resource.oxygen = Oxygen(self.resource.oxygen.0 - rate);
                 return true;
-                
             }
             ResourceKind::Fuel(_) => {
                 self.resource.fuel = Fuel(self.resource.fuel.0 - rate);
