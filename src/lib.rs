@@ -141,7 +141,6 @@ pub enum GameWarning {
     Unreachable,
     ResourceExhausted,
     Nominal,
-    
 }
 /// Command enums for user input.
 pub enum Commands {
@@ -153,6 +152,8 @@ pub enum Commands {
     Recharge,
     /// Show a space ship's info.
     SpaceShipInfo,
+    /// Show a mother ship's info.
+    MotherShipInfo,
     /// Show resources within a certain distance of the ship.
     Ping,
     /// Offload storage to a mothership.

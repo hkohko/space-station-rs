@@ -243,9 +243,9 @@ impl<'a> TransferResources for SpaceShip<'a> {
                     if check_full {
                         return GameWarning::ShipStorageFull
                     }
-                    let still_available =
+                    let rsc_still_available =
                         _env_resource.give_resources(ResourceKind::FoodWater(consumption_rate), val);
-                    if still_available {
+                    if rsc_still_available {
                         let is_full = self.receive_to_storage(ResourceKind::FoodWater(recharge_rate));
                         if is_full {
                             return GameWarning::ShipStorageFull
@@ -300,10 +300,23 @@ impl<'a> TransferResources for SpaceShip<'a> {
             println!("You're too far from mother ship to offload storage!");
             return 
         }
-        let look_for_max = [self.storage.consumable.0, self.storage.oxygen.0, self.storage.fuel.0];
-        let max = look_for_max.into_iter().max();
-        if let Some(val) = max {
-            todo!()
+        if self.storage.consumable.0 > 0 {
+            for _ in 0..self.storage.consumable.0 {
+                self.storage.consumable = FoodWater::new(self.storage.consumable.0 - self.world_parameters.recharge_rate);
+                target.receive_to_storage(ResourceKind::FoodWater(0));
+            }
+        }
+        if self.storage.oxygen.0 > 0 {
+            for _ in 0..self.storage.oxygen.0 {
+                self.storage.oxygen = Oxygen::new(self.storage.oxygen.0 - self.world_parameters.recharge_rate);
+                target.receive_to_storage(ResourceKind::Oxygen(0));
+            }
+        }
+        if self.storage.fuel.0 > 0 {
+            for _ in 0..self.storage.fuel.0 {
+                self.storage.fuel = Fuel::new(self.storage.fuel.0 - self.world_parameters.recharge_rate);
+                target.receive_to_storage(ResourceKind::Fuel(0));
+            }
         }
         
     }

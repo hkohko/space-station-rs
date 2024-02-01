@@ -129,6 +129,12 @@ impl<'a> GenericInfo for MotherShip<'a> {
         let fuel = self.resource.fuel.0;
         println!("--Mothership '{}' Resources--\nConsumables: {consumables}\nOxygen: {oxygen}\nFuel: {fuel}", self.name)
     }
+    fn display_storage(&self) {
+        let consumables = self.storage.consumable.0;
+        let oxygen = self.storage.oxygen.0;
+        let fuel = self.storage.fuel.0;
+        println!("--Mothership '{}' Storage--\nConsumables: {consumables}\nOxygen: {oxygen}\nFuel: {fuel}", self.name);
+    }
 }
 #[derive(Debug)]
 /// Struct for mothershp resources.

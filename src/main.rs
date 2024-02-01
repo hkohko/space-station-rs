@@ -1,16 +1,16 @@
 use space_station::prelude::*;
-use space_station::Commands::{Empty, Mine, MoveTo, Ping, Recharge, SpaceShipInfo, Offload};
+use space_station::Commands::*;
 use std::cell::RefCell;
 use std::io;
 fn main() {
-    let world = World::new(500, 200, 50, 1, 200, 1, 100, 100);
+    let world = World::new(500, 200, 50, 1, 200, 1, 1, 100);
     let (spc_ship_name, mtr_ship_name) = name_inputs();
     game_loop(mtr_ship_name, spc_ship_name, world)
 }
 fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
     let mut mtr_ship = MotherShip::new(spc_ship_name.as_str(), &world);
     let mut spc_ship = SpaceShip::new(mtr_ship_name.as_str(), &world);
-    let list_of_commands = vec!["move", "mine", "recharge", "sinfo", "ping", "offload"];
+    let list_of_commands = vec!["move", "mine", "recharge", "sinfo", "minfo" ,"ping", "offload"];
 
     loop {
         println!();
@@ -24,6 +24,7 @@ fn game_loop(mtr_ship_name: String, spc_ship_name: String, world: World) {
             Mine => handle_mine(&mut spc_ship, &world),
             Recharge => handle_recharge(&mut spc_ship, &mut mtr_ship),
             SpaceShipInfo => handle_sinfo(&spc_ship),
+            MotherShipInfo => handle_minfo(&mtr_ship),
             Ping => handle_ping(&spc_ship),
             Offload => handle_offload(&mut spc_ship, &mut mtr_ship),
             Empty => continue,
@@ -59,6 +60,7 @@ fn handle_move(spc_ship: &mut SpaceShip, world: &World) {
     let to = Coordinates::new(x, y, world.play_area);
     spc_ship.to_location(to);
 }
+
 fn handle_mine(spc_ship: &mut SpaceShip, world: &World) {
     let id = get_input("Enter resource ID: ");
     let id_as_i32 = match id.parse::<i32>() {
@@ -88,6 +90,16 @@ fn handle_recharge(spc_ship: &mut SpaceShip, mtr_ship: &mut MotherShip) {
     spc_ship.teleport(mtr_ship);
     spc_ship.recharge(mtr_ship);
 }
+fn handle_minfo(mtr_ship: &MotherShip) {
+    println!();
+    mtr_ship.display_info();
+    println!();
+    mtr_ship.display_resources();
+    println!();
+    mtr_ship.display_storage();
+    println!();
+    
+}
 fn handle_sinfo(spc_ship: &SpaceShip) {
     println!();
     spc_ship.display_info();
@@ -98,15 +110,17 @@ fn handle_sinfo(spc_ship: &SpaceShip) {
     println!();
 }
 fn handle_offload(spc_ship: &mut SpaceShip, mtr_ship: &mut MotherShip) {
-    
+    spc_ship.offload_storage(mtr_ship);
 }
 fn parse_command(input_cmd: String) -> Commands {
     match input_cmd.as_str() {
         "move" => MoveTo,
         "mine" => Mine,
         "recharge" => Recharge,
+        "minfo" => MotherShipInfo,
         "sinfo" => SpaceShipInfo,
         "ping" => Ping,
+        "offload" => Offload,
         _ => Empty,
     }
 }
